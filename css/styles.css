@@ -394,32 +394,6 @@ select { font-family: inherit; cursor: default; }
   overflow: hidden;
 }
 
-.hero-sparkle-sweep {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.03) 44%,
-    rgba(45, 212, 191, 0.18) 49%,
-    rgba(255, 255, 255, 0.25) 50%,
-    rgba(232, 197, 71, 0.15) 51%,
-    rgba(45, 212, 191, 0.12) 53%,
-    transparent 58%
-  );
-  background-size: 220% 100%;
-  animation: heroSparkleSweep 7s ease-in-out infinite;
-  mix-blend-mode: screen;
-}
-
-@keyframes heroSparkleSweep {
-  0% { background-position: 220% 0; opacity: 0; }
-  15% { opacity: 1; }
-  50% { background-position: -20% 0; opacity: 1; }
-  85% { opacity: 0; }
-  100% { background-position: -20% 0; opacity: 0; }
-}
-
 .hero-sparkle-field {
   position: absolute;
   inset: 0;
@@ -527,7 +501,6 @@ select { font-family: inherit; cursor: default; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-sparkle-sweep,
   .hero-sparkle,
   .hero-mouse-sparkle,
   .hero-bg {
