@@ -111,11 +111,8 @@
     { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.65 }
   );
 
-  // ─── Hero FX (sparkles, bokeh, shooting stars, pulse rings) ───
+  // ─── Hero sparkle FX ───
   const sparkleField = document.getElementById('heroSparkleField');
-  const bokehField = document.getElementById('heroBokeh');
-  const pulseRings = document.getElementById('heroPulseRings');
-  const shootingStars = document.getElementById('heroShootingStars');
   const mouseSparkles = document.getElementById('heroMouseSparkles');
   const heroSection = document.getElementById('hero');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -137,61 +134,6 @@
         el.style.setProperty('--delay', `${Math.random() * 6}s`);
         sparkleField.appendChild(el);
       }
-    }
-
-    if (bokehField) {
-      const bokehCount = isMobile ? 8 : 14;
-      for (let i = 0; i < bokehCount; i++) {
-        const dot = document.createElement('span');
-        const size = 20 + Math.random() * 60;
-        dot.className = `hero-bokeh-dot${Math.random() > 0.55 ? ' gold' : ''}`;
-        dot.style.width = `${size}px`;
-        dot.style.height = `${size}px`;
-        dot.style.left = `${Math.random() * 100}%`;
-        dot.style.top = `${Math.random() * 100}%`;
-        dot.style.setProperty('--dur', `${14 + Math.random() * 12}s`);
-        dot.style.setProperty('--delay', `${Math.random() * -20}s`);
-        dot.style.setProperty('--op', `${0.15 + Math.random() * 0.35}`);
-        bokehField.appendChild(dot);
-      }
-    }
-
-    function spawnPulseRing() {
-      if (!pulseRings || pulseRings.children.length > 6) return;
-      const ring = document.createElement('span');
-      const isGold = Math.random() > 0.5;
-      ring.className = `hero-pulse-ring${isGold ? ' gold' : ''}`;
-      ring.style.left = `${15 + Math.random() * 70}%`;
-      ring.style.top = `${20 + Math.random() * 60}%`;
-      ring.style.setProperty('--sz', `${60 + Math.random() * 100}px`);
-      ring.style.setProperty('--dur', `${2.5 + Math.random() * 2}s`);
-      pulseRings.appendChild(ring);
-      ring.addEventListener('animationend', () => ring.remove());
-    }
-
-    function spawnShootingStar() {
-      if (!shootingStars || shootingStars.children.length > 3) return;
-      const star = document.createElement('span');
-      const isGold = Math.random() > 0.45;
-      const angle = -25 - Math.random() * 30;
-      star.className = `hero-shooting-star${isGold ? ' gold' : ''}`;
-      star.style.left = `${Math.random() * 80}%`;
-      star.style.top = `${Math.random() * 50}%`;
-      star.style.setProperty('--angle', `${angle}deg`);
-      star.style.setProperty('--len', `${80 + Math.random() * 100}px`);
-      star.style.setProperty('--dur', `${0.8 + Math.random() * 0.8}s`);
-      shootingStars.appendChild(star);
-      star.addEventListener('animationend', () => star.remove());
-    }
-
-    if (pulseRings) {
-      spawnPulseRing();
-      setInterval(spawnPulseRing, isMobile ? 2800 : 1800);
-    }
-
-    if (shootingStars) {
-      setTimeout(spawnShootingStar, 1200);
-      setInterval(spawnShootingStar, isMobile ? 4500 : 2800);
     }
 
     if (mouseSparkles && heroSection && window.matchMedia('(pointer: fine)').matches) {
@@ -223,7 +165,7 @@
     }
   }
 
-  // ─── Particle Canvas (stars + sparkles) ───
+  // ─── Particle Canvas (sparkle stars) ───
   const canvas = document.getElementById('particleCanvas');
   if (canvas && !reducedMotion) {
     const ctx = canvas.getContext('2d');
@@ -282,7 +224,6 @@
         this.hue = Math.random() > 0.45 ? 168 : 43;
         this.twinkle = Math.random() * Math.PI * 2;
         this.twinkleSpeed = 0.02 + Math.random() * 0.04;
-        this.isStar = Math.random() > 0.55;
       }
       update() {
         this.x += this.speedX;
@@ -303,16 +244,7 @@
         if (this.x < -20 || this.x > w + 20 || this.y < -20 || this.y > h + 20) this.reset();
       }
       draw() {
-        if (this.isStar && this.size > 1.2) {
-          drawStar(this.x, this.y, this.size * 1.8, this.currentOpacity, this.hue);
-        } else {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${this.hue}, 85%, 65%, ${this.currentOpacity})`;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = `hsla(${this.hue}, 85%, 60%, ${this.currentOpacity * 0.6})`;
-          ctx.fill();
-        }
+        drawStar(this.x, this.y, this.size * 1.6, this.currentOpacity, this.hue);
       }
     }
 
@@ -321,8 +253,8 @@
         this.x = x;
         this.y = y;
         this.life = 1;
-        this.decay = 0.015 + Math.random() * 0.02;
-        this.rays = 6 + Math.floor(Math.random() * 4);
+        this.decay = 0.02 + Math.random() * 0.025;
+        this.size = 3 + Math.random() * 4;
         this.hue = Math.random() > 0.5 ? 168 : 43;
       }
       update() {
@@ -330,20 +262,7 @@
         return this.life > 0;
       }
       draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.globalAlpha = this.life * 0.7;
-        for (let i = 0; i < this.rays; i++) {
-          const angle = (Math.PI * 2 / this.rays) * i;
-          const len = 8 + (1 - this.life) * 20;
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(Math.cos(angle) * len, Math.sin(angle) * len);
-          ctx.strokeStyle = `hsla(${this.hue}, 90%, 75%, ${this.life})`;
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-        }
-        ctx.restore();
+        drawStar(this.x, this.y, this.size * (0.5 + this.life * 1.5), this.life * 0.85, this.hue);
       }
     }
 
