@@ -10,7 +10,7 @@
   <meta property="og:description" content="Learn why bathtub refinishing is the best way to transform your bathroom. Licensed, insured, ISO-FREE coatings. Contact us for a FREE estimate.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.bathprofessional.com">
-  <meta property="og:image" content="images/hero-refinished.jpg">
+  <meta property="og:image" content="images/hero-pristine.jpg">
   <title>Bath Professional | Refinishing, Reglazing — FREE Estimate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,11 +93,28 @@
   <main>
     <!-- HERO -->
     <section class="section hero" id="hero">
-      <canvas id="particleCanvas" class="particle-canvas"></canvas>
       <div class="hero-video-wrap">
-        <img class="hero-bg" src="images/hero-refinished.jpg" alt="Beautiful refinished bathroom with gleaming clawfoot tub, teal tile, gold fixtures, and modern mirror — Bath Professional">
+        <img class="hero-bg" src="images/hero-pristine.jpg" alt="Pristine luxury bathroom with gleaming refinished clawfoot tub, teal tile, gold fixtures, and glowing mirror — Bath Professional">
         <div class="hero-overlay"></div>
       </div>
+      <div class="hero-fx" aria-hidden="true">
+        <div class="hero-light-rays"></div>
+        <div class="hero-sparkle-sweep"></div>
+        <div class="hero-sparkle-sweep hero-sparkle-sweep-2"></div>
+        <div class="hero-lens-flare"></div>
+        <div class="hero-orbs">
+          <span class="hero-orb hero-orb-1"></span>
+          <span class="hero-orb hero-orb-2"></span>
+          <span class="hero-orb hero-orb-3"></span>
+          <span class="hero-orb hero-orb-4"></span>
+        </div>
+        <div class="hero-bokeh" id="heroBokeh"></div>
+        <div class="hero-pulse-rings" id="heroPulseRings"></div>
+        <div class="hero-shooting-stars" id="heroShootingStars"></div>
+        <div class="hero-sparkle-field" id="heroSparkleField"></div>
+        <div class="hero-mouse-sparkles" id="heroMouseSparkles"></div>
+      </div>
+      <canvas id="particleCanvas" class="particle-canvas"></canvas>
       <div class="hero-content">
         <div class="hero-badge hero-badge-prominent reveal-up">
           <span class="hero-badge-icon" aria-hidden="true">🛡️</span>
@@ -128,18 +145,16 @@
           </a>
         </div>
         <div class="google-trust-panel reveal-up" aria-label="Google reviews and credentials">
-          <div class="google-trust-brand">
-            <img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" alt="Google" width="36" height="36" loading="eager">
-            <div class="google-trust-rating">
-              <span class="google-trust-score">5.0</span>
-              <div class="google-trust-stars" aria-label="5 out of 5 stars">★★★★★</div>
-              <span class="google-trust-count"><strong>427</strong> verified Google reviews</span>
-            </div>
-          </div>
-          <div class="google-trust-divider" aria-hidden="true"></div>
           <div class="google-trust-actions">
+            <div class="google-trust-brand">
+              <img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" alt="Google" width="36" height="36" loading="eager">
+              <div class="google-trust-rating">
+                <span class="google-trust-score">5.0</span>
+                <div class="google-trust-stars" aria-label="5 out of 5 stars">★★★★★</div>
+                <span class="google-trust-count"><strong>427</strong> verified Google reviews</span>
+              </div>
+            </div>
             <a href="https://share.google/2lFzTu5iHsSYiOprH" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Read Our Google Reviews</a>
-            <a href="https://share.google/rsbyvtmiEVkZDn9KH" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Top Rated on Google</a>
             <a href="https://share.google/rsbyvtmiEVkZDn9KH" class="google-highest-badge" target="_blank" rel="noopener noreferrer" aria-label="Highest Rated on Google — 5.0 stars, 427 reviews">
               <span class="google-highest-crown" aria-hidden="true">👑</span>
               <span class="google-highest-content">
@@ -148,6 +163,7 @@
                 <span class="google-highest-stars" aria-hidden="true">★★★★★</span>
               </span>
             </a>
+            <a href="https://share.google/5WxBb37ohbLlTDuEQ" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Customer Testimonials</a>
           </div>
         </div>
       </div>
@@ -575,6 +591,18 @@
             <h2 class="section-title">Request Your <span class="text-teal">FREE Estimate</span></h2>
             <form class="quote-form" id="quoteForm">
               <div class="form-group">
+                <label for="contactName">Your Name</label>
+                <input type="text" id="contactName" name="name" required class="form-input" placeholder="Full name" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">Email</label>
+                <input type="email" id="contactEmail" name="email" required class="form-input" placeholder="you@email.com" autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label for="contactPhone">Phone</label>
+                <input type="tel" id="contactPhone" name="phone" required class="form-input" placeholder="(407) 555-0100" autocomplete="tel">
+              </div>
+              <div class="form-group">
                 <label for="serviceType">Service Needed</label>
                 <select id="serviceType" required>
                   <option value="">Select service...</option>
@@ -649,7 +677,8 @@
                 <span class="calendar-label">Schedule Your FREE On-Site Estimate</span>
                 <div class="calendar-grid" id="calendarGrid"></div>
               </div>
-              <a href="#contact" class="btn btn-primary glow-btn">Confirm My FREE Estimate</a>
+              <button type="button" class="btn btn-primary glow-btn" id="confirmEstimateBtn">Confirm My FREE Estimate</button>
+              <p class="form-status hidden" id="quoteFormStatus" role="status"></p>
             </div>
           </div>
         </div>
@@ -748,9 +777,28 @@
       <div class="container final-cta-content">
         <h2 class="final-cta-title glow-text">Contact Us Today For a FREE Estimate</h2>
         <p class="final-cta-sub">Our team replies very fast. Open 7 days a week, 8AM–7PM.</p>
-        <a href="#quote" class="btn btn-cta-massive glow-btn">
-          Get Your FREE Estimate
-        </a>
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="contact-form-grid">
+            <div class="form-group">
+              <label for="cfName">Your Name</label>
+              <input type="text" id="cfName" name="name" required class="form-input" placeholder="Full name" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="cfEmail">Email</label>
+              <input type="email" id="cfEmail" name="email" required class="form-input" placeholder="you@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="cfPhone">Phone</label>
+              <input type="tel" id="cfPhone" name="phone" required class="form-input" placeholder="(407) 555-0100" autocomplete="tel">
+            </div>
+            <div class="form-group contact-form-full">
+              <label for="cfMessage">How Can We Help?</label>
+              <textarea id="cfMessage" name="message" rows="4" required class="form-input form-textarea" placeholder="Tell us about your tub, shower, tile, or countertop project..."></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-cta-massive glow-btn" id="contactSubmitBtn">Send Message</button>
+          <p class="form-status hidden" id="contactFormStatus" role="status"></p>
+        </form>
         <div class="contact-phones">
           <a href="tel:+18888283691" class="final-cta-phone">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
@@ -856,6 +904,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
   <script src="js/google-reviews.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

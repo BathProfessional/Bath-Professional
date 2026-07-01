@@ -111,12 +111,127 @@
     { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.65 }
   );
 
-  // ─── Particle Canvas ───
+  // ─── Hero FX (sparkles, bokeh, shooting stars, pulse rings) ───
+  const sparkleField = document.getElementById('heroSparkleField');
+  const bokehField = document.getElementById('heroBokeh');
+  const pulseRings = document.getElementById('heroPulseRings');
+  const shootingStars = document.getElementById('heroShootingStars');
+  const mouseSparkles = document.getElementById('heroMouseSparkles');
+  const heroSection = document.getElementById('hero');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 768;
+
+  if (!reducedMotion) {
+    if (sparkleField) {
+      const colors = ['teal', 'gold', 'white'];
+      const count = isMobile ? 32 : 56;
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        const isDiamond = Math.random() > 0.6;
+        el.className = `hero-sparkle ${colors[i % 3]}${isDiamond ? ' diamond' : ''}`;
+        el.style.left = `${Math.random() * 100}%`;
+        el.style.top = `${Math.random() * 100}%`;
+        el.style.setProperty('--sz', `${2 + Math.random() * 6}px`);
+        el.style.setProperty('--dur', `${1.8 + Math.random() * 4.5}s`);
+        el.style.setProperty('--delay', `${Math.random() * 6}s`);
+        sparkleField.appendChild(el);
+      }
+    }
+
+    if (bokehField) {
+      const bokehCount = isMobile ? 8 : 14;
+      for (let i = 0; i < bokehCount; i++) {
+        const dot = document.createElement('span');
+        const size = 20 + Math.random() * 60;
+        dot.className = `hero-bokeh-dot${Math.random() > 0.55 ? ' gold' : ''}`;
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        dot.style.left = `${Math.random() * 100}%`;
+        dot.style.top = `${Math.random() * 100}%`;
+        dot.style.setProperty('--dur', `${14 + Math.random() * 12}s`);
+        dot.style.setProperty('--delay', `${Math.random() * -20}s`);
+        dot.style.setProperty('--op', `${0.15 + Math.random() * 0.35}`);
+        bokehField.appendChild(dot);
+      }
+    }
+
+    function spawnPulseRing() {
+      if (!pulseRings || pulseRings.children.length > 6) return;
+      const ring = document.createElement('span');
+      const isGold = Math.random() > 0.5;
+      ring.className = `hero-pulse-ring${isGold ? ' gold' : ''}`;
+      ring.style.left = `${15 + Math.random() * 70}%`;
+      ring.style.top = `${20 + Math.random() * 60}%`;
+      ring.style.setProperty('--sz', `${60 + Math.random() * 100}px`);
+      ring.style.setProperty('--dur', `${2.5 + Math.random() * 2}s`);
+      pulseRings.appendChild(ring);
+      ring.addEventListener('animationend', () => ring.remove());
+    }
+
+    function spawnShootingStar() {
+      if (!shootingStars || shootingStars.children.length > 3) return;
+      const star = document.createElement('span');
+      const isGold = Math.random() > 0.45;
+      const angle = -25 - Math.random() * 30;
+      star.className = `hero-shooting-star${isGold ? ' gold' : ''}`;
+      star.style.left = `${Math.random() * 80}%`;
+      star.style.top = `${Math.random() * 50}%`;
+      star.style.setProperty('--angle', `${angle}deg`);
+      star.style.setProperty('--len', `${80 + Math.random() * 100}px`);
+      star.style.setProperty('--dur', `${0.8 + Math.random() * 0.8}s`);
+      shootingStars.appendChild(star);
+      star.addEventListener('animationend', () => star.remove());
+    }
+
+    if (pulseRings) {
+      spawnPulseRing();
+      setInterval(spawnPulseRing, isMobile ? 2800 : 1800);
+    }
+
+    if (shootingStars) {
+      setTimeout(spawnShootingStar, 1200);
+      setInterval(spawnShootingStar, isMobile ? 4500 : 2800);
+    }
+
+    if (mouseSparkles && heroSection && window.matchMedia('(pointer: fine)').matches) {
+      const sparkleColors = ['#5eead4', '#fbbf24', '#ffffff'];
+      let lastSpawn = 0;
+
+      heroSection.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - lastSpawn < 45) return;
+        lastSpawn = now;
+
+        const rect = heroSection.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        const spark = document.createElement('span');
+        spark.className = 'hero-mouse-sparkle';
+        spark.style.left = `${x}%`;
+        spark.style.top = `${y}%`;
+        spark.style.setProperty('--sz', `${3 + Math.random() * 4}px`);
+        spark.style.setProperty('--sparkle-color', sparkleColors[Math.floor(Math.random() * 3)]);
+        mouseSparkles.appendChild(spark);
+
+        if (mouseSparkles.children.length > 24) {
+          mouseSparkles.firstElementChild?.remove();
+        }
+        spark.addEventListener('animationend', () => spark.remove());
+      });
+    }
+  }
+
+  // ─── Particle Canvas (stars + sparkles) ───
   const canvas = document.getElementById('particleCanvas');
-  if (canvas) {
+  if (canvas && !reducedMotion) {
     const ctx = canvas.getContext('2d');
     let particles = [];
+    let sparkBursts = [];
     let w, h;
+    let mouseX = -1000;
+    let mouseY = -1000;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -125,37 +240,129 @@
     resize();
     window.addEventListener('resize', resize);
 
+    document.getElementById('hero')?.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+
+    function drawStar(x, y, size, opacity, hue) {
+      const spikes = 4;
+      const outer = size;
+      const inner = size * 0.35;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(Math.PI / 4);
+      ctx.beginPath();
+      for (let i = 0; i < spikes * 2; i++) {
+        const r = i % 2 === 0 ? outer : inner;
+        const a = (Math.PI / spikes) * i;
+        const px = Math.cos(a) * r;
+        const py = Math.sin(a) * r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = `hsla(${hue}, 90%, 72%, ${opacity})`;
+      ctx.shadowBlur = size * 3;
+      ctx.shadowColor = `hsla(${hue}, 90%, 60%, ${opacity * 0.8})`;
+      ctx.fill();
+      ctx.restore();
+    }
+
     class Particle {
       constructor() { this.reset(); }
       reset() {
         this.x = Math.random() * w;
         this.y = Math.random() * h;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.3;
-        this.speedY = (Math.random() - 0.5) * 0.3;
-        this.opacity = Math.random() * 0.5 + 0.1;
-        this.hue = Math.random() > 0.5 ? 170 : 45;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4 - 0.15;
+        this.opacity = Math.random() * 0.6 + 0.15;
+        this.hue = Math.random() > 0.45 ? 168 : 43;
+        this.twinkle = Math.random() * Math.PI * 2;
+        this.twinkleSpeed = 0.02 + Math.random() * 0.04;
+        this.isStar = Math.random() > 0.55;
       }
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+        this.twinkle += this.twinkleSpeed;
+        const tw = 0.5 + Math.sin(this.twinkle) * 0.5;
+        this.currentOpacity = this.opacity * tw;
+
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          this.x -= dx * 0.008;
+          this.y -= dy * 0.008;
+          this.currentOpacity = Math.min(1, this.currentOpacity + 0.15);
+        }
+
+        if (this.x < -20 || this.x > w + 20 || this.y < -20 || this.y > h + 20) this.reset();
       }
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity})`;
-        ctx.fill();
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = `hsla(${this.hue}, 80%, 60%, 0.5)`;
+        if (this.isStar && this.size > 1.2) {
+          drawStar(this.x, this.y, this.size * 1.8, this.currentOpacity, this.hue);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, 85%, 65%, ${this.currentOpacity})`;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = `hsla(${this.hue}, 85%, 60%, ${this.currentOpacity * 0.6})`;
+          ctx.fill();
+        }
       }
     }
 
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
+    class SparkBurst {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.life = 1;
+        this.decay = 0.015 + Math.random() * 0.02;
+        this.rays = 6 + Math.floor(Math.random() * 4);
+        this.hue = Math.random() > 0.5 ? 168 : 43;
+      }
+      update() {
+        this.life -= this.decay;
+        return this.life > 0;
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.globalAlpha = this.life * 0.7;
+        for (let i = 0; i < this.rays; i++) {
+          const angle = (Math.PI * 2 / this.rays) * i;
+          const len = 8 + (1 - this.life) * 20;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(angle) * len, Math.sin(angle) * len);
+          ctx.strokeStyle = `hsla(${this.hue}, 90%, 75%, ${this.life})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    const particleCount = isMobile ? 80 : 140;
+    for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+    setInterval(() => {
+      if (sparkBursts.length < 10) {
+        sparkBursts.push(new SparkBurst(Math.random() * w, Math.random() * h * 0.85));
+      }
+    }, isMobile ? 1200 : 700);
 
     function animateParticles() {
       ctx.clearRect(0, 0, w, h);
       particles.forEach((p) => { p.update(); p.draw(); });
+      sparkBursts = sparkBursts.filter((b) => {
+        b.draw();
+        return b.update();
+      });
       requestAnimationFrame(animateParticles);
     }
     animateParticles();
