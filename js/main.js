@@ -358,10 +358,25 @@
   // ─── Before/After Slider ───
   function initBAComparison(container) {
     const beforeWrap = container.querySelector('.ba-before-wrap');
+    const beforeImg = container.querySelector('.ba-before');
+    const afterImg = container.querySelector('.ba-after');
     const handle = container.querySelector('.ba-handle');
     if (!beforeWrap || !handle) return;
 
     let isDragging = false;
+
+    function syncBeforeImageWidth() {
+      if (!beforeImg) return;
+      const w = container.offsetWidth;
+      beforeImg.style.width = `${w}px`;
+      if (afterImg) {
+        afterImg.style.objectPosition = 'center center';
+        beforeImg.style.objectPosition = 'center center';
+      }
+    }
+
+    syncBeforeImageWidth();
+    window.addEventListener('resize', syncBeforeImageWidth);
 
     function setPosition(x) {
       const rect = container.getBoundingClientRect();
