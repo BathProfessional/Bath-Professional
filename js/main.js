@@ -368,11 +368,18 @@
     function syncBeforeImageWidth() {
       if (!beforeImg) return;
       const w = container.getBoundingClientRect().width;
-      if (w <= 0) return;
+      const h = container.getBoundingClientRect().height;
+      if (w <= 0 || h <= 0) return;
       beforeImg.style.width = `${w}px`;
-      beforeImg.style.height = '100%';
+      beforeImg.style.height = `${h}px`;
+      beforeImg.style.objectFit = 'contain';
       beforeImg.style.objectPosition = 'center center';
-      if (afterImg) afterImg.style.objectPosition = 'center center';
+      if (afterImg) {
+        afterImg.style.width = '100%';
+        afterImg.style.height = '100%';
+        afterImg.style.objectFit = 'contain';
+        afterImg.style.objectPosition = 'center center';
+      }
     }
 
     syncBeforeImageWidth();
