@@ -1,4 +1,7 @@
-"""Create worn 'before' images from pristine 'after' images — same frame, perfect slider alignment."""
+"""Optional utility: derive worn 'before' images from 'after' frames for pixel-perfect slider alignment.
+
+Note: For realistic worn/chipped/moldy before photos, generate separate BEFORE images with Grok Imagine instead.
+"""
 from __future__ import annotations
 
 import random
