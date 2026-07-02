@@ -357,49 +357,25 @@
 
   // ─── Before/After Slider ───
   function initBAComparison(container) {
-    const beforeWrap = container.querySelector('.ba-before-wrap');
-    const beforeImg = container.querySelector('.ba-before');
-    const afterImg = container.querySelector('.ba-after');
     const handle = container.querySelector('.ba-handle');
-    if (!beforeWrap || !handle) return;
+    if (!handle) return;
 
     let isDragging = false;
 
-    function syncBeforeImageWidth() {
-      if (!beforeImg) return;
-      const w = container.getBoundingClientRect().width;
-      const h = container.getBoundingClientRect().height;
-      if (w <= 0 || h <= 0) return;
-      beforeImg.style.width = `${w}px`;
-      beforeImg.style.height = `${h}px`;
-      beforeImg.style.objectFit = 'cover';
-      beforeImg.style.objectPosition = 'center center';
-      if (afterImg) {
-        afterImg.style.width = '100%';
-        afterImg.style.height = '100%';
-        afterImg.style.objectFit = 'cover';
-        afterImg.style.objectPosition = 'center center';
-      }
-    }
-
-    syncBeforeImageWidth();
-    container._syncBA = syncBeforeImageWidth;
-
-    if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(() => syncBeforeImageWidth());
-      ro.observe(container);
-    }
-    window.addEventListener('resize', syncBeforeImageWidth);
-    beforeImg?.addEventListener('load', syncBeforeImageWidth);
-    afterImg?.addEventListener('load', syncBeforeImageWidth);
-
     function setPosition(x) {
       const rect = container.getBoundingClientRect();
+      if (rect.width <= 0) return;
       let percent = ((x - rect.left) / rect.width) * 100;
       percent = Math.max(5, Math.min(95, percent));
-      beforeWrap.style.width = percent + '%';
+      container.style.setProperty('--ba-split', percent + '%');
       handle.style.left = percent + '%';
     }
+
+    setPosition(container.getBoundingClientRect().left + container.getBoundingClientRect().width * 0.5);
+    container._syncBA = () => {
+      const split = container.style.getPropertyValue('--ba-split') || '50%';
+      container.style.setProperty('--ba-split', split);
+    };
 
     const startDrag = (e) => {
       isDragging = true;

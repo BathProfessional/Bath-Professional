@@ -1235,41 +1235,31 @@ select { font-family: inherit; cursor: default; }
 .ba-slide.active { display: block; }
 
 .ba-comparison {
+  --ba-split: 50%;
   position: relative;
   aspect-ratio: 16/9;
   overflow: hidden;
   cursor: ew-resize;
 }
 
-.ba-after {
+.ba-after,
+.ba-before {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  z-index: 1;
-}
-
-.ba-before-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 50%;
-  overflow: hidden;
-  z-index: 2;
-}
-
-.ba-before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  max-width: none;
-  object-fit: cover;
+  object-fit: fill;
   object-position: center center;
   display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ba-after { z-index: 1; }
+
+.ba-before {
+  z-index: 2;
+  clip-path: inset(0 calc(100% - var(--ba-split)) 0 0);
 }
 
 .ba-handle {
