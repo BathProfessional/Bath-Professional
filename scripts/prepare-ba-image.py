@@ -1,4 +1,4 @@
-"""Prepare before/after slider images — identical letterbox framing for alignment."""
+"""Prepare before/after slider image pairs with identical crop for pixel alignment."""
 from __future__ import annotations
 
 import sys
@@ -7,29 +7,39 @@ from pathlib import Path
 from PIL import Image
 
 TARGET = (1920, 1080)
-BG = (20, 24, 32)
 
 
-def letterbox(src: Path, out: Path) -> None:
-    img = Image.open(src).convert("RGB")
+def pair_cover_crop(before_src: Path, after_src: Path, before_out: Path, after_out: Path) -> None:
+    before = Image.open(before_src).convert("RGB")
+    after = Image.open(after_src).convert("RGB")
+
+    if after.size != before.size:
+        after = after.resize(before.size, Image.LANCZOS)
+
     tw, th = TARGET
-    sw, sh = img.size
-    scale = min(tw / sw, th / sh)
+    sw, sh = before.size
+    scale = max(tw / sw, th / sh)
     nw, nh = int(sw * scale), int(sh * scale)
-    img = img.resize((nw, nh), Image.LANCZOS)
-    canvas = Image.new("RGB", TARGET, BG)
-    ox = (TARGET[0] - img.width) // 2
-    oy = (TARGET[1] - img.height) // 2
-    canvas.paste(img, (ox, oy))
-    canvas.save(out, quality=92, optimize=True)
-    print(f"OK {out.name} <- {src.name} ({img.width}x{img.height} in {TARGET[0]}x{TARGET[1]})")
+    left = (nw - tw) // 2
+    top = (nh - th) // 2
+
+    for img, out in ((before, before_out), (after, after_out)):
+        scaled = img.resize((nw, nh), Image.LANCZOS)
+        cropped = scaled.crop((left, top, left + tw, top + th))
+        cropped.save(out, quality=92, optimize=True)
+        print(f"OK {out.name} <- {before_src.name if img is before else after_src.name}")
 
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print("Usage: prepare-ba-image.py <source> <dest.jpg>")
+    if len(sys.argv) != 5:
+        print("Usage: prepare-ba-image.py <before_src> <after_src> <before_out> <after_out>")
         return 1
-    letterbox(Path(sys.argv[1]), Path(sys.argv[2]))
+    pair_cover_crop(
+        Path(sys.argv[1]),
+        Path(sys.argv[2]),
+        Path(sys.argv[3]),
+        Path(sys.argv[4]),
+    )
     return 0
 
 

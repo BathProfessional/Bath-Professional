@@ -372,12 +372,12 @@
       if (w <= 0 || h <= 0) return;
       beforeImg.style.width = `${w}px`;
       beforeImg.style.height = `${h}px`;
-      beforeImg.style.objectFit = 'contain';
+      beforeImg.style.objectFit = 'cover';
       beforeImg.style.objectPosition = 'center center';
       if (afterImg) {
         afterImg.style.width = '100%';
         afterImg.style.height = '100%';
-        afterImg.style.objectFit = 'contain';
+        afterImg.style.objectFit = 'cover';
         afterImg.style.objectPosition = 'center center';
       }
     }
