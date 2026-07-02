@@ -367,16 +367,24 @@
 
     function syncBeforeImageWidth() {
       if (!beforeImg) return;
-      const w = container.offsetWidth;
+      const w = container.getBoundingClientRect().width;
+      if (w <= 0) return;
       beforeImg.style.width = `${w}px`;
-      if (afterImg) {
-        afterImg.style.objectPosition = 'center center';
-        beforeImg.style.objectPosition = 'center center';
-      }
+      beforeImg.style.height = '100%';
+      beforeImg.style.objectPosition = 'center center';
+      if (afterImg) afterImg.style.objectPosition = 'center center';
     }
 
     syncBeforeImageWidth();
+    container._syncBA = syncBeforeImageWidth;
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => syncBeforeImageWidth());
+      ro.observe(container);
+    }
     window.addEventListener('resize', syncBeforeImageWidth);
+    beforeImg?.addEventListener('load', syncBeforeImageWidth);
+    afterImg?.addEventListener('load', syncBeforeImageWidth);
 
     function setPosition(x) {
       const rect = container.getBoundingClientRect();
@@ -421,6 +429,9 @@
       btn.classList.add('active');
       baSlides.forEach((slide) => slide.classList.remove('active'));
       baSlides[index]?.classList.add('active');
+      requestAnimationFrame(() => {
+        baSlides[index]?.querySelectorAll('.ba-comparison').forEach((el) => el._syncBA?.());
+      });
     });
   });
 
