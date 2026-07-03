@@ -212,6 +212,7 @@ select { font-family: inherit; cursor: default; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   height: 100%;
   width: min(1280px, 92vw);
   margin: 0 auto;
@@ -255,6 +256,40 @@ select { font-family: inherit; cursor: default; }
   font-weight: 400;
   color: var(--gold-light);
   text-shadow: 0 0 20px rgba(201, 162, 39, 0.35);
+}
+
+.header-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--teal-bright);
+  background: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.28);
+  border-radius: 100px;
+  box-shadow:
+    0 0 20px rgba(20, 184, 166, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-shadow: 0 0 16px rgba(20, 184, 166, 0.35);
+  transition: color 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.header-phone svg {
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px var(--teal-glow));
+}
+
+.header-phone:hover {
+  color: var(--white);
+  background: rgba(20, 184, 166, 0.18);
+  border-color: rgba(45, 212, 191, 0.5);
+  box-shadow: 0 0 28px rgba(20, 184, 166, 0.28);
+  transform: translateY(-1px);
 }
 
 .nav-desktop {
@@ -367,11 +402,28 @@ select { font-family: inherit; cursor: default; }
     font-size: 1.25rem;
     padding: 8px 14px 8px 12px;
   }
+
+  .header-phone {
+    font-size: 0.875rem;
+    padding: 8px 16px;
+    gap: 8px;
+  }
 }
 
 @media (max-width: 1024px) {
   .nav-desktop { display: none; }
   .menu-toggle { display: flex; }
+}
+
+@media (max-width: 520px) {
+  .header-phone span {
+    font-size: 0.8125rem;
+  }
+
+  .header-phone {
+    padding: 8px 12px;
+    gap: 6px;
+  }
 }
 
 /* Mobile Menu */
