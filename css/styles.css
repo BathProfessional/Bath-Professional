@@ -920,6 +920,18 @@ select { font-family: inherit; cursor: default; }
   text-shadow: 0 0 20px var(--gold-glow), 0 0 40px rgba(201, 162, 39, 0.3);
 }
 
+.hero-location {
+  margin: 20px auto 28px;
+  max-width: 720px;
+  font-size: clamp(0.9375rem, 2vw, 1.125rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--white-90);
+  text-align: center;
+  line-height: 1.5;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+}
+
 @media (max-width: 600px) {
   .hero-title-tagline {
     letter-spacing: 0.2em;
@@ -2529,6 +2541,109 @@ select { font-family: inherit; cursor: default; }
 @media (max-width: 900px) {
   .quote-wrapper { grid-template-columns: 1fr; }
   .quote-result-side { position: static; }
+}
+
+/* Local SEO — Tampa */
+.local-seo {
+  background: var(--navy-950);
+  min-height: auto;
+}
+
+.local-seo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.local-seo-card {
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.local-seo-card:hover {
+  border-color: rgba(20, 184, 166, 0.35);
+  box-shadow: 0 0 24px rgba(20, 184, 166, 0.1);
+}
+
+.local-seo-card h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--teal-bright);
+  margin-bottom: 12px;
+}
+
+.local-seo-card p {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--white-70);
+}
+
+.local-seo-card strong {
+  color: var(--white-90);
+}
+
+.local-areas {
+  margin-bottom: 36px;
+  padding: 28px 32px;
+  background: rgba(20, 184, 166, 0.06);
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  border-radius: 20px;
+}
+
+.local-areas-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.local-areas-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 14px;
+  list-style: none;
+}
+
+.local-areas-list li {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--white-90);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+}
+
+.local-seo-cta {
+  text-align: center;
+}
+
+.local-seo-cta p {
+  font-size: 1.0625rem;
+  color: var(--white-70);
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+.local-seo-cta a:not(.btn) {
+  color: var(--teal-bright);
+  font-weight: 700;
+}
+
+.local-seo-cta a:not(.btn):hover {
+  color: var(--gold-light);
+}
+
+@media (max-width: 900px) {
+  .local-seo-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* FAQ */
