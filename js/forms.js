@@ -54,7 +54,7 @@
     if (msg.includes('web server')) {
       return msg;
     }
-    return msg || 'Could not send online. Please call (888) 828-3691 or email support@bathprofessional.com directly.';
+    return msg || 'Could not send online. Please call (813) 445-9319 or email support@bathprofessional.com directly.';
   }
 
   // Show success if redirected back after standard form post
