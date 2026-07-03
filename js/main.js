@@ -5,16 +5,21 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // ─── Lenis Smooth Scroll ───
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true,
-  });
+  // ─── Lenis Smooth Scroll (desktop only — native scroll on touch devices) ───
+  const useLenis = window.matchMedia('(pointer: fine)').matches && window.innerWidth >= 1024;
+  let lenis = null;
 
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
+  if (useLenis) {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
 
   // ─── Custom Cursor (Bathtub) ───
   const cursor = document.getElementById('cursor');
@@ -78,10 +83,18 @@
   // ─── Smooth anchor links ───
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
-      const target = document.querySelector(anchor.getAttribute('href'));
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
       if (target) {
         e.preventDefault();
-        lenis.scrollTo(target, { offset: -80 });
+        const offset = -80;
+        if (lenis) {
+          lenis.scrollTo(target, { offset });
+        } else {
+          const top = target.getBoundingClientRect().top + window.scrollY + offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
       }
     });
   });

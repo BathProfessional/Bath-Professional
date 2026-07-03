@@ -31,6 +31,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 html.lenis, html.lenis body { height: auto; }
@@ -43,6 +44,8 @@ body {
   background: var(--navy-950);
   color: var(--white);
   line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
   cursor: default;
 }
@@ -427,6 +430,7 @@ select { font-family: inherit; cursor: default; }
 .mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.3s; }
 .mobile-menu.open .mobile-nav-link:nth-child(6) { transition-delay: 0.35s; }
 .mobile-menu.open .mobile-nav-link:nth-child(7) { transition-delay: 0.4s; }
+.mobile-menu.open .mobile-nav-link:nth-child(8) { transition-delay: 0.45s; }
 
 .mobile-nav-link:hover { color: var(--teal-bright); }
 
@@ -1255,6 +1259,9 @@ select { font-family: inherit; cursor: default; }
   aspect-ratio: 16/9;
   overflow: hidden;
   cursor: ew-resize;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .ba-after,
@@ -3006,4 +3013,345 @@ select { font-family: inherit; cursor: default; }
   .lightbox-gallery { grid-template-columns: 1fr; }
   .hero-ctas { flex-direction: column; align-items: center; }
   .hero-ctas .btn { width: 100%; max-width: 320px; }
+}
+
+/* ============================================
+   MOBILE & TABLET RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --header-h: 72px;
+  }
+
+  .container {
+    width: min(1280px, 94vw);
+  }
+
+  .section {
+    min-height: auto;
+    padding: 72px 0 56px;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-desc {
+    font-size: 1rem;
+    padding: 0 4px;
+  }
+
+  .hero.section {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .hero-content {
+    width: 100%;
+    padding: calc(var(--header-h) + 16px) 16px 48px;
+  }
+
+  .hero-badge-prominent {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 20px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .hero-badge-text {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .hero-ctas {
+    margin-bottom: 40px;
+  }
+
+  .scroll-indicator {
+    display: none;
+  }
+
+  .google-trust-panel {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .google-trust-actions {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .google-trust-actions .btn,
+  .google-highest-badge {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+
+  .google-trust-score {
+    font-size: 2rem;
+  }
+
+  .ba-slider-nav {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+
+  .ba-slider-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ba-nav-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    font-size: 0.75rem;
+  }
+
+  .ba-slider-container {
+    border-radius: 16px;
+  }
+
+  .ba-label {
+    top: 12px;
+    padding: 6px 12px;
+    font-size: 0.6875rem;
+  }
+
+  .ba-label-before { left: 12px; }
+  .ba-label-after { right: 12px; }
+
+  .ba-handle-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .difference-split {
+    min-height: auto;
+  }
+
+  .difference-content {
+    padding: 56px 20px;
+  }
+
+  .color-wheel-section {
+    padding: 48px 20px 56px;
+  }
+
+  .color-wheel {
+    --ring-radius: 100px;
+    --swatch-size: 44px;
+    --hub-size: 100px;
+    width: 280px;
+    height: 280px;
+  }
+
+  .color-palette {
+    max-width: 100%;
+    gap: 8px;
+  }
+
+  .color-chip {
+    font-size: 0.6875rem;
+    padding: 7px 10px 7px 7px;
+  }
+
+  .stats-grid {
+    gap: 12px;
+    margin: 28px 0;
+  }
+
+  .stat-card {
+    padding: 20px 16px;
+  }
+
+  .stat-number {
+    font-size: clamp(1.35rem, 4.5vw, 2rem);
+  }
+
+  .stat-suffix {
+    font-size: 1.125rem;
+  }
+
+  .service-card-inner {
+    min-height: auto;
+    padding: 28px 22px;
+  }
+
+  .service-card p {
+    min-height: auto;
+  }
+
+  .service-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .google-reviews-sidebar {
+    padding: 22px 18px;
+  }
+
+  .google-summary-actions .btn {
+    width: 100%;
+  }
+
+  .google-review-card {
+    flex: 0 0 min(300px, 85vw);
+  }
+
+  .why-card {
+    padding: 28px 22px;
+  }
+
+  .faq-question {
+    font-size: 1rem;
+    padding: 18px 0;
+  }
+
+  .final-cta {
+    padding: 80px 0;
+  }
+
+  .final-cta-title {
+    font-size: clamp(2rem, 8vw, 2.75rem);
+  }
+
+  .final-cta-sub {
+    font-size: 1rem;
+    padding: 0 8px;
+  }
+
+  .btn-cta-massive {
+    width: 100%;
+    max-width: 320px;
+    padding: 18px 28px;
+    font-size: 1rem;
+  }
+
+  .final-cta-phone {
+    font-size: 1.25rem;
+  }
+
+  .final-cta-phone.secondary {
+    font-size: 1rem;
+  }
+
+  .contact-form {
+    max-width: 100%;
+  }
+
+  .form-input,
+  .form-group select,
+  .form-textarea {
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+
+  .footer {
+    padding: 48px 0 32px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+  }
+
+  .footer-col {
+    width: 100%;
+  }
+
+  .legal-page {
+    padding: calc(var(--header-h) + 32px) 0 56px;
+  }
+
+  .mobile-nav {
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: calc(var(--header-h) + 28px) 24px 40px;
+    gap: 18px;
+  }
+
+  .mobile-nav-link {
+    font-size: clamp(1.5rem, 6vw, 1.875rem);
+  }
+
+  .mobile-nav-cta {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+
+  .menu-toggle {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title-brand {
+    font-size: clamp(2.25rem, 11vw, 3rem);
+  }
+
+  .hero-title-tagline {
+    letter-spacing: 0.12em;
+    font-size: 0.8125rem;
+    padding: 10px 14px;
+  }
+
+  .hero-title-tagline em {
+    letter-spacing: 0.12em;
+  }
+
+  .hero-sub-item {
+    font-size: 0.8125rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .google-trust-logo {
+    width: 48px;
+    height: 48px;
+    transform: scale(1.15);
+  }
+
+  .ba-comparison {
+    aspect-ratio: 4/3;
+  }
+
+  .process-step {
+    padding: 14px 10px;
+    font-size: 0.75rem;
+  }
+
+  .color-wheel-title {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .color-custom-note {
+    max-width: 100%;
+    font-size: 0.75rem;
+  }
 }
