@@ -42,7 +42,7 @@
     }
     animateTub();
 
-    const hoverTargets = 'a, button, .ba-comparison, .masonry-item, .service-card, .calendar-day, select, .faq-question';
+    const hoverTargets = 'a, button, .ba-comparison, .service-card, .calendar-day, select, .faq-question';
     document.querySelectorAll(hoverTargets).forEach((el) => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
@@ -426,6 +426,8 @@
     counter: ['after-5.jpg', 'gallery-4.jpg', 'gallery-8.jpg', 'service-counter.jpg'],
     cabinet: ['gallery-7.jpg', 'gallery-11.jpg', 'service-cabinet.jpg'],
     sink: ['gallery-9.jpg', 'gallery-12.jpg', 'service-sink.jpg'],
+    residential: ['after-1.jpg', 'after-3.jpg', 'gallery-3.jpg', 'gallery-7.jpg'],
+    commercial: ['after-2.jpg', 'after-3.jpg', 'gallery-6.jpg', 'gallery-10.jpg'],
   };
 
   const serviceTitles = {
@@ -435,6 +437,8 @@
     counter: 'Countertop Refinishing',
     cabinet: 'Cabinet Refinishing',
     sink: 'Sink Refinishing',
+    residential: 'Residential Refinishing',
+    commercial: 'Commercial Refinishing',
   };
 
   const serviceLightbox = document.getElementById('serviceLightbox');
@@ -467,88 +471,35 @@
     });
   });
 
-  // ─── Gallery Filter ───
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const masonryItems = document.querySelectorAll('.masonry-item');
-
-  filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter;
-      filterBtns.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      masonryItems.forEach((item) => {
-        const cat = item.dataset.category;
-        const show = filter === 'all' || cat === filter;
-        item.classList.toggle('hidden-item', !show);
-        if (show) {
-          gsap.fromTo(item, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' });
-        }
-      });
-    });
-  });
-
-  // Portfolio lightbox
-  const portfolioLightbox = document.getElementById('portfolioLightbox');
-  const portfolioBeforeWrap = document.getElementById('portfolioBeforeWrap');
-  const portfolioBAHandle = document.getElementById('portfolioBAHandle');
-  const portfolioBA = document.getElementById('portfolioBA');
-
-  masonryItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      document.getElementById('portfolioBefore').src = 'images/' + item.dataset.before.split('/').pop();
-      document.getElementById('portfolioAfter').src = 'images/' + item.dataset.after.split('/').pop();
-      document.getElementById('portfolioBefore').alt = 'Before transformation';
-      document.getElementById('portfolioAfter').alt = 'After transformation — Bath Professional';
-      document.getElementById('portfolioQuote').textContent = '"' + item.dataset.testimonial + '"';
-      document.getElementById('portfolioClient').textContent = '— ' + item.dataset.client;
-      portfolioBeforeWrap.style.width = '50%';
-      portfolioBAHandle.style.left = '50%';
-      portfolioLightbox.classList.add('open');
-      portfolioLightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
-  if (portfolioBA) {
-    let portfolioDragging = false;
-    const startP = (e) => {
-      portfolioDragging = true;
-      const x = e.touches ? e.touches[0].clientX : e.clientX;
-      const rect = portfolioBA.getBoundingClientRect();
-      let percent = ((x - rect.left) / rect.width) * 100;
-      percent = Math.max(5, Math.min(95, percent));
-      portfolioBeforeWrap.style.width = percent + '%';
-      portfolioBAHandle.style.left = percent + '%';
-    };
-    portfolioBA.addEventListener('mousedown', startP);
-    portfolioBA.addEventListener('touchstart', startP, { passive: true });
-    window.addEventListener('mousemove', (e) => {
-      if (!portfolioDragging) return;
-      startP(e);
-    });
-    window.addEventListener('touchmove', (e) => {
-      if (!portfolioDragging) return;
-      startP(e);
-    }, { passive: true });
-    window.addEventListener('mouseup', () => { portfolioDragging = false; });
-    window.addEventListener('touchend', () => { portfolioDragging = false; });
-  }
-
   // ─── Color Wheel ───
   const colorSwatches = document.querySelectorAll('.color-swatch');
+  const colorChips = document.querySelectorAll('.color-chip');
   const colorName = document.getElementById('colorName');
   const colorCode = document.getElementById('colorCode');
   const colorPreview = document.querySelector('.color-preview-surface');
 
+  function selectColor(color, code, swatchHex) {
+    colorSwatches.forEach((s) => {
+      s.classList.toggle('active', s.dataset.color === color);
+    });
+    colorChips.forEach((c) => {
+      c.classList.toggle('active', c.dataset.color === color);
+    });
+    colorName.textContent = color;
+    colorCode.textContent = code;
+    colorPreview.style.background = swatchHex;
+    gsap.from(colorPreview, { scale: 0.9, duration: 0.4, ease: 'back.out(1.5)' });
+  }
+
   colorSwatches.forEach((swatch) => {
     swatch.addEventListener('click', () => {
-      colorSwatches.forEach((s) => s.classList.remove('active'));
-      swatch.classList.add('active');
-      colorName.textContent = swatch.dataset.color;
-      colorCode.textContent = swatch.dataset.code;
-      colorPreview.style.background = swatch.style.getPropertyValue('--swatch') || getComputedStyle(swatch).getPropertyValue('--swatch');
-      gsap.from(colorPreview, { scale: 0.9, duration: 0.4, ease: 'back.out(1.5)' });
+      selectColor(swatch.dataset.color, swatch.dataset.code, swatch.dataset.swatch);
+    });
+  });
+
+  colorChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      selectColor(chip.dataset.color, chip.dataset.code, chip.dataset.swatch);
     });
   });
 
@@ -683,7 +634,7 @@
   // Escape key closes modals
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      [serviceLightbox, portfolioLightbox, videoModal].forEach((modal) => {
+      [serviceLightbox, videoModal].forEach((modal) => {
         if (modal?.classList.contains('open')) closeLightbox(modal);
       });
     }
