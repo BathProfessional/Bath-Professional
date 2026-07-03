@@ -2620,6 +2620,23 @@ select { font-family: inherit; cursor: default; }
   border-radius: 100px;
 }
 
+.local-areas-note {
+  margin-top: 20px;
+  font-size: 0.9375rem;
+  color: var(--white-70);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.local-areas-note a {
+  color: var(--teal-bright);
+  font-weight: 700;
+}
+
+.local-areas-note a:hover {
+  color: var(--gold-light);
+}
+
 .local-seo-cta {
   text-align: center;
 }
