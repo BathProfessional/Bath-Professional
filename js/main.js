@@ -42,7 +42,7 @@
     }
     animateTub();
 
-    const hoverTargets = 'a, button, .ba-comparison, .service-card, .calendar-day, select, .faq-question';
+    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question';
     document.querySelectorAll(hoverTargets).forEach((el) => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
@@ -418,47 +418,6 @@
     });
   });
 
-  // ─── Service Lightbox ───
-  const serviceGalleries = {
-    tub: ['after-1.jpg', 'gallery-1.jpg', 'gallery-5.jpg', 'gallery-9.jpg'],
-    shower: ['after-2.jpg', 'after-6.jpg', 'gallery-2.jpg', 'gallery-6.jpg'],
-    tile: ['after-4.jpg', 'after-6.jpg', 'gallery-10.jpg', 'gallery-11.jpg'],
-    counter: ['after-5.jpg', 'gallery-4.jpg', 'gallery-8.jpg', 'service-counter.jpg'],
-    cabinet: ['gallery-7.jpg', 'gallery-11.jpg', 'service-cabinet.jpg'],
-    sink: ['gallery-9.jpg', 'gallery-12.jpg', 'service-sink.jpg'],
-    residential: ['after-1.jpg', 'after-3.jpg', 'gallery-3.jpg', 'gallery-7.jpg'],
-    commercial: ['after-2.jpg', 'after-3.jpg', 'gallery-6.jpg', 'gallery-10.jpg'],
-  };
-
-  const serviceTitles = {
-    tub: 'Bathtub Refinishing',
-    shower: 'Shower Refinishing',
-    tile: 'Tile Refinishing',
-    counter: 'Countertop Refinishing',
-    cabinet: 'Cabinet Refinishing',
-    sink: 'Sink Refinishing',
-    residential: 'Residential Refinishing',
-    commercial: 'Commercial Refinishing',
-  };
-
-  const serviceLightbox = document.getElementById('serviceLightbox');
-  const lightboxGallery = document.getElementById('lightboxGallery');
-  const lightboxTitle = document.getElementById('lightboxTitle');
-
-  document.querySelectorAll('.service-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const key = btn.dataset.gallery;
-      const images = serviceGalleries[key] || [];
-      lightboxTitle.textContent = serviceTitles[key] || 'Finish Gallery';
-      lightboxGallery.innerHTML = images
-        .map((img) => `<img src="images/${img}" alt="Bath Professional ${serviceTitles[key]} finish example" loading="lazy">`)
-        .join('');
-      serviceLightbox.classList.add('open');
-      serviceLightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
   function closeLightbox(el) {
     el.classList.remove('open');
     el.setAttribute('aria-hidden', 'true');
@@ -503,94 +462,6 @@
     });
   });
 
-  // ─── Quote Generator ───
-  const quoteForm = document.getElementById('quoteForm');
-  const quotePlaceholder = document.querySelector('.quote-placeholder');
-  const quoteReveal = document.getElementById('quoteReveal');
-  const priceAmount = document.getElementById('priceAmount');
-
-  const servicePrices = {
-    tub: 650, shower: 750, tile: 900, counter: 850,
-    cabinet: 700, sink: 400, multiple: 1800,
-  };
-
-  const conditionMultiplier = { good: 1, fair: 1.15, poor: 1.35 };
-  const finishMultiplier = { white: 1, biscuit: 1, bone: 1, almond: 1, custom: 1.15 };
-
-  quoteForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const serviceType = document.getElementById('serviceType').value;
-    const condition = document.getElementById('condition').value;
-    const finish = document.getElementById('finish').value;
-
-    let base = servicePrices[serviceType] || 750;
-    base *= conditionMultiplier[condition] || 1;
-    base *= finishMultiplier[finish] || 1;
-    base = Math.round(base / 25) * 25;
-
-    quotePlaceholder.style.display = 'none';
-    quoteReveal.classList.remove('hidden');
-
-    const priceObj = { val: 0 };
-    gsap.to(priceObj, {
-      val: base,
-      duration: 1.5,
-      ease: 'power2.out',
-      onUpdate: () => {
-        priceAmount.textContent = '$' + Math.round(priceObj.val).toLocaleString();
-      },
-    });
-
-    gsap.from('.price-reveal', { scale: 0.8, opacity: 0, duration: 0.6, ease: 'back.out(1.5)' });
-    gsap.from('.timeline-reveal', { y: 20, opacity: 0, duration: 0.5, delay: 0.3 });
-    gsap.from('.calendar-picker', { y: 20, opacity: 0, duration: 0.5, delay: 0.5 });
-
-    buildCalendar();
-  });
-
-  function buildCalendar() {
-    const grid = document.getElementById('calendarGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-
-    const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    days.forEach((d) => {
-      const el = document.createElement('div');
-      el.className = 'calendar-day header';
-      el.textContent = d;
-      grid.appendChild(el);
-    });
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-      const el = document.createElement('div');
-      el.className = 'calendar-day disabled';
-      grid.appendChild(el);
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const el = document.createElement('div');
-      el.className = 'calendar-day';
-      el.textContent = d;
-      const date = new Date(year, month, d);
-      if (date < now || date.getDay() === 0) {
-        el.classList.add('disabled');
-      } else {
-        el.addEventListener('click', () => {
-          grid.querySelectorAll('.calendar-day').forEach((c) => c.classList.remove('selected'));
-          el.classList.add('selected');
-        });
-      }
-      grid.appendChild(el);
-    }
-  }
-
   // ─── FAQ Accordion ───
   document.querySelectorAll('.faq-question').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -634,7 +505,7 @@
   // Escape key closes modals
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      [serviceLightbox, videoModal].forEach((modal) => {
+      [videoModal].forEach((modal) => {
         if (modal?.classList.contains('open')) closeLightbox(modal);
       });
     }
