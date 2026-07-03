@@ -12,7 +12,7 @@
     reviewCount: 427,
     googleUrl: 'https://share.google/2lFzTu5iHsSYiOprH',
     mapsUrl: 'https://www.google.com/maps/place/Bath+Professional/@27.8128045,-82.6437443,17z',
-    writeReviewUrl: 'https://www.google.com/maps/place/Bath+Professional/data=!4m3!3m2!1s0x88c2857f583996e9:0x69f36db9bc03f039!12e1',
+    writeReviewUrl: 'https://share.google/JtqGU48Sy7SxPmi96',
     placeId: 'ChIJDeiWOVfhwogROfADvLmt82k',
     reviews: [
       {
@@ -107,7 +107,7 @@
       </div>
       <div class="google-summary-details">
         <p class="google-summary-count"><strong>${data.reviewCount.toLocaleString()}</strong> verified Google reviews</p>
-        <p class="google-summary-tagline">Highest-rated refinishing company in Central Florida</p>
+        <p class="google-summary-tagline">Highest-rated refinishing company in Florida</p>
       </div>
       <div class="google-summary-actions">
         <a href="${data.googleUrl}" class="btn btn-review-outline" target="_blank" rel="noopener noreferrer">Read All Reviews</a>
