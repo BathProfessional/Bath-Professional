@@ -2666,16 +2666,21 @@ select { font-family: inherit; cursor: default; }
 /* FAQ */
 .faq { background: var(--navy-900); min-height: auto; }
 
+.faq .section-title {
+  font-size: clamp(2.75rem, 6.5vw, 4.5rem);
+}
+
 .faq-list {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
 .faq-intro {
   text-align: center;
   color: var(--white-70);
-  margin-bottom: 32px;
-  font-size: 0.9375rem;
+  margin-bottom: 40px;
+  font-size: 1.125rem;
+  line-height: 1.7;
 }
 
 .faq-intro a {
@@ -2693,8 +2698,8 @@ select { font-family: inherit; cursor: default; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
-  font-size: 1.0625rem;
+  padding: 28px 0;
+  font-size: 1.1875rem;
   font-weight: 500;
   text-align: left;
   color: var(--white);
@@ -2717,13 +2722,13 @@ select { font-family: inherit; cursor: default; }
   transition: max-height 0.5s var(--ease-out-expo);
 }
 
-.faq-item.open .faq-answer { max-height: 300px; }
+.faq-item.open .faq-answer { max-height: 400px; }
 
 .faq-answer p {
-  padding-bottom: 24px;
+  padding-bottom: 28px;
   color: var(--white-70);
   line-height: 1.8;
-  font-size: 0.9375rem;
+  font-size: 1.0625rem;
 }
 
 /* FINAL CTA */
