@@ -2666,8 +2666,9 @@ select { font-family: inherit; cursor: default; }
 /* FAQ */
 .faq { background: var(--navy-900); min-height: auto; }
 
-.faq .section-title {
-  font-size: clamp(2.75rem, 6.5vw, 4.5rem);
+.faq .section-tag {
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  letter-spacing: 0.22em;
 }
 
 .faq-list {
