@@ -247,7 +247,20 @@ select { font-family: inherit; cursor: default; }
 .logo-icon {
   color: var(--teal-bright);
   font-size: 1.625rem;
+  flex-shrink: 0;
   filter: drop-shadow(0 0 8px var(--teal-glow));
+}
+
+.logo-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.logo-name {
+  font-weight: 700;
 }
 
 .logo em {
@@ -415,14 +428,62 @@ select { font-family: inherit; cursor: default; }
   .menu-toggle { display: flex; }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .header-phone span {
-    font-size: 0.8125rem;
+    display: none;
   }
 
   .header-phone {
-    padding: 8px 12px;
+    padding: 8px 10px;
+    gap: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-inner {
+    width: 100%;
+    padding: 0 10px 0 12px;
+    gap: 8px;
+  }
+
+  .header .logo {
+    font-size: 1rem;
+    padding: 5px 8px 5px 6px;
     gap: 6px;
+    border-radius: 10px;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 9.5rem;
+    box-shadow:
+      0 0 12px rgba(20, 184, 166, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .header .logo-icon {
+    font-size: 1rem;
+  }
+
+  .header .logo-text {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    line-height: 0.95;
+    white-space: normal;
+  }
+
+  .header .logo-name {
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+  }
+
+  .header .logo em {
+    font-size: 0.6875rem;
+    line-height: 1;
+  }
+
+  .menu-toggle {
+    padding: 10px 11px;
+    flex-shrink: 0;
   }
 }
 
@@ -3211,6 +3272,29 @@ select { font-family: inherit; cursor: default; }
 @media (max-width: 768px) {
   :root {
     --header-h: 72px;
+  }
+
+  .header-inner {
+    width: 100%;
+    padding: 0 12px 0 14px;
+    gap: 10px;
+  }
+
+  .header .logo {
+    font-size: 1.125rem;
+    padding: 6px 10px 6px 8px;
+    gap: 7px;
+    border-radius: 12px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .header .logo-icon {
+    font-size: 1.125rem;
+  }
+
+  .header .logo-text {
+    white-space: nowrap;
   }
 
   .container {
