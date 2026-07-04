@@ -75,12 +75,12 @@ select { font-family: inherit; cursor: default; }
 
 .section-tag {
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: clamp(0.9375rem, 1.6vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--teal);
-  margin-bottom: 16px;
+  color: var(--teal-bright);
+  margin-bottom: 18px;
 }
 
 .section-title {
