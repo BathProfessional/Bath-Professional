@@ -179,7 +179,10 @@
     <!-- HERO -->
     <section class="section hero" id="hero">
       <div class="hero-video-wrap">
-        <img class="hero-bg" src="images/hero-pristine.jpg" alt="Bathtub refinishing in Tampa FL — gleaming refinished clawfoot tub by Bath Professional">
+        <picture>
+          <source media="(max-width: 768px)" srcset="images/hero-pristine-mobile.jpg">
+          <img class="hero-bg" src="images/hero-pristine.jpg" alt="Bathtub refinishing in Tampa FL — gleaming refinished clawfoot tub by Bath Professional" width="1280" height="720" fetchpriority="high" decoding="async">
+        </picture>
         <div class="hero-overlay"></div>
       </div>
       <div class="hero-fx" aria-hidden="true">
