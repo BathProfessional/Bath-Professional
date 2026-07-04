@@ -79,7 +79,10 @@ def anchor_shift(before: Image.Image, after: Image.Image) -> tuple[int, int]:
     dy = int(round((da[1] - db[1] + an[1] - dn[1]) / 2))
     print(f"before drain={db} niche={dn}")
     print(f"after  drain={da} niche={an}")
-    print(f"shift dx={dx} dy={dy}")
+    print(f"anchor shift dx={dx} dy={dy}")
+    # Fine-tune on final crop so niche/tile lines meet at the slider seam.
+    dx, dy = dx - 49, dy - 40
+    print(f"final shift dx={dx} dy={dy}")
     return dx, dy
 
 
