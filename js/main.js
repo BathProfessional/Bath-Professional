@@ -129,12 +129,12 @@
   const mouseSparkles = document.getElementById('heroMouseSparkles');
   const heroSection = document.getElementById('hero');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isMobile = window.innerWidth < 768;
+  const isMobileHero = window.matchMedia('(max-width: 768px), (hover: none)').matches;
 
   if (!reducedMotion) {
     if (sparkleField) {
       const colors = ['teal', 'gold', 'white'];
-      const count = isMobile ? 32 : 56;
+      const count = isMobileHero ? 12 : 56;
 
       for (let i = 0; i < count; i++) {
         const el = document.createElement('span');
@@ -180,7 +180,7 @@
 
   // ─── Particle Canvas (sparkle stars) ───
   const canvas = document.getElementById('particleCanvas');
-  if (canvas && !reducedMotion) {
+  if (canvas && !reducedMotion && !isMobileHero) {
     const ctx = canvas.getContext('2d');
     let particles = [];
     let sparkBursts = [];
@@ -279,14 +279,14 @@
       }
     }
 
-    const particleCount = isMobile ? 80 : 140;
+    const particleCount = 140;
     for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
     setInterval(() => {
       if (sparkBursts.length < 10) {
         sparkBursts.push(new SparkBurst(Math.random() * w, Math.random() * h * 0.85));
       }
-    }, isMobile ? 1200 : 700);
+    }, 700);
 
     function animateParticles() {
       ctx.clearRect(0, 0, w, h);
@@ -493,17 +493,19 @@
     });
   });
 
-  // ─── Parallax on scroll ───
-  gsap.to('.hero-bg', {
-    scrollTrigger: {
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: true,
-    },
-    y: 120,
-    scale: 1.05,
-  });
+  // ─── Parallax on scroll (desktop only — smoother on mobile) ───
+  if (!isMobileHero && !reducedMotion) {
+    gsap.to('.hero-bg', {
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+      y: 120,
+      scale: 1.05,
+    });
+  }
 
   gsap.to('.final-cta-bg', {
     scrollTrigger: {
