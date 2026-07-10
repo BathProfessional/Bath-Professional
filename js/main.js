@@ -99,29 +99,30 @@
     });
   });
 
-  // ─── Hero Reveal Animation ───
+  // ─── Hero Reveal Animation (force3D + softer stagger for smoother intro) ───
   gsap.to('.hero-badge.reveal-up, .hero-sub.reveal-up, .hero-ctas.reveal-up, .google-trust-panel.reveal-up', {
     opacity: 1,
     y: 0,
-    duration: 1,
-    stagger: 0.12,
-    ease: 'power3.out',
-    delay: 0.8,
+    duration: 0.9,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.55,
+    force3D: true,
   });
 
   gsap.fromTo('.hero-title-brand',
-    { opacity: 0, y: 50, scale: 0.92 },
-    { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'power4.out', delay: 0.2 }
+    { opacity: 0, y: 36, scale: 0.96 },
+    { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power3.out', delay: 0.15, force3D: true }
   );
 
   gsap.fromTo('.hero-title-divider',
     { opacity: 0, scaleX: 0 },
-    { opacity: 1, scaleX: 1, duration: 0.8, ease: 'power3.inOut', delay: 0.5 }
+    { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power2.inOut', delay: 0.4, force3D: true }
   );
 
   gsap.fromTo('.hero-title-tagline',
-    { opacity: 0, y: 24 },
-    { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.65 }
+    { opacity: 0, y: 18 },
+    { opacity: 1, y: 0, duration: 0.85, ease: 'power2.out', delay: 0.5, force3D: true }
   );
 
   // ─── Hero sparkle FX ───
@@ -134,17 +135,18 @@
   if (!reducedMotion) {
     if (sparkleField) {
       const colors = ['teal', 'gold', 'white'];
-      const count = isMobileHero ? 12 : 56;
+      // Fewer DOM sparkles = far less composite cost
+      const count = isMobileHero ? 6 : 18;
 
       for (let i = 0; i < count; i++) {
         const el = document.createElement('span');
-        const isDiamond = Math.random() > 0.6;
+        const isDiamond = Math.random() > 0.7;
         el.className = `hero-sparkle ${colors[i % 3]}${isDiamond ? ' diamond' : ''}`;
-        el.style.left = `${Math.random() * 100}%`;
-        el.style.top = `${Math.random() * 100}%`;
-        el.style.setProperty('--sz', `${2 + Math.random() * 6}px`);
-        el.style.setProperty('--dur', `${1.8 + Math.random() * 4.5}s`);
-        el.style.setProperty('--delay', `${Math.random() * 6}s`);
+        el.style.left = `${8 + Math.random() * 84}%`;
+        el.style.top = `${8 + Math.random() * 84}%`;
+        el.style.setProperty('--sz', `${2 + Math.random() * 4}px`);
+        el.style.setProperty('--dur', `${2.8 + Math.random() * 3.5}s`);
+        el.style.setProperty('--delay', `${Math.random() * 4}s`);
         sparkleField.appendChild(el);
       }
     }
@@ -152,152 +154,152 @@
     if (mouseSparkles && heroSection && window.matchMedia('(pointer: fine)').matches) {
       const sparkleColors = ['#5eead4', '#fbbf24', '#ffffff'];
       let lastSpawn = 0;
+      let heroRect = null;
+      let rectStale = true;
+
+      const refreshRect = () => { rectStale = true; };
+      window.addEventListener('resize', refreshRect, { passive: true });
+      window.addEventListener('scroll', refreshRect, { passive: true });
 
       heroSection.addEventListener('mousemove', (e) => {
-        const now = Date.now();
-        if (now - lastSpawn < 45) return;
+        const now = performance.now();
+        // Throttle harder (~12 sparks/sec) for smoother main thread
+        if (now - lastSpawn < 80) return;
         lastSpawn = now;
 
-        const rect = heroSection.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        if (rectStale || !heroRect) {
+          heroRect = heroSection.getBoundingClientRect();
+          rectStale = false;
+        }
+
+        const x = ((e.clientX - heroRect.left) / heroRect.width) * 100;
+        const y = ((e.clientY - heroRect.top) / heroRect.height) * 100;
 
         const spark = document.createElement('span');
         spark.className = 'hero-mouse-sparkle';
         spark.style.left = `${x}%`;
         spark.style.top = `${y}%`;
-        spark.style.setProperty('--sz', `${3 + Math.random() * 4}px`);
+        spark.style.setProperty('--sz', `${2.5 + Math.random() * 3}px`);
         spark.style.setProperty('--sparkle-color', sparkleColors[Math.floor(Math.random() * 3)]);
         mouseSparkles.appendChild(spark);
 
-        if (mouseSparkles.children.length > 24) {
+        if (mouseSparkles.children.length > 12) {
           mouseSparkles.firstElementChild?.remove();
         }
-        spark.addEventListener('animationend', () => spark.remove());
-      });
+        spark.addEventListener('animationend', () => spark.remove(), { once: true });
+      }, { passive: true });
     }
   }
 
-  // ─── Particle Canvas (sparkle stars) ───
+  // ─── Particle Canvas (lightweight glow dots — desktop only) ───
   const canvas = document.getElementById('particleCanvas');
   if (canvas && !reducedMotion && !isMobileHero) {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     let particles = [];
-    let sparkBursts = [];
-    let w, h;
+    let w, h, dpr = 1;
     let mouseX = -1000;
     let mouseY = -1000;
+    let running = true;
+    let lastFrame = 0;
 
     function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
+      const hero = document.getElementById('hero');
+      const rect = hero?.getBoundingClientRect() || { width: window.innerWidth, height: window.innerHeight };
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = Math.floor(rect.width);
+      h = Math.floor(rect.height);
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
+
+    // Pause particles when hero is off-screen
+    if ('IntersectionObserver' in window && heroSection) {
+      const io = new IntersectionObserver(([entry]) => {
+        running = entry.isIntersecting;
+        if (running) requestAnimationFrame(animateParticles);
+      }, { threshold: 0.05 });
+      io.observe(heroSection);
+    }
 
     document.getElementById('hero')?.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
       mouseY = e.clientY - rect.top;
-    });
+    }, { passive: true });
 
-    function drawStar(x, y, size, opacity, hue) {
-      const spikes = 4;
-      const outer = size;
-      const inner = size * 0.35;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(Math.PI / 4);
+    // Soft circles only — no path stars / no shadowBlur (major GPU win)
+    function drawDot(x, y, size, opacity, hue) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, size * 2.2);
+      g.addColorStop(0, `hsla(${hue}, 90%, 75%, ${opacity})`);
+      g.addColorStop(0.45, `hsla(${hue}, 90%, 60%, ${opacity * 0.35})`);
+      g.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
       ctx.beginPath();
-      for (let i = 0; i < spikes * 2; i++) {
-        const r = i % 2 === 0 ? outer : inner;
-        const a = (Math.PI / spikes) * i;
-        const px = Math.cos(a) * r;
-        const py = Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = `hsla(${hue}, 90%, 72%, ${opacity})`;
-      ctx.shadowBlur = size * 3;
-      ctx.shadowColor = `hsla(${hue}, 90%, 60%, ${opacity * 0.8})`;
+      ctx.fillStyle = g;
+      ctx.arc(x, y, size * 2.2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
 
     class Particle {
-      constructor() { this.reset(); }
-      reset() {
+      constructor() { this.reset(true); }
+      reset(initial) {
         this.x = Math.random() * w;
-        this.y = Math.random() * h;
-        this.size = Math.random() * 2.5 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.4;
-        this.speedY = (Math.random() - 0.5) * 0.4 - 0.15;
-        this.opacity = Math.random() * 0.6 + 0.15;
+        this.y = initial ? Math.random() * h : h + 10;
+        this.size = Math.random() * 1.8 + 0.6;
+        this.speedX = (Math.random() - 0.5) * 0.22;
+        this.speedY = (Math.random() - 0.5) * 0.22 - 0.08;
+        this.opacity = Math.random() * 0.45 + 0.12;
         this.hue = Math.random() > 0.45 ? 168 : 43;
         this.twinkle = Math.random() * Math.PI * 2;
-        this.twinkleSpeed = 0.02 + Math.random() * 0.04;
+        this.twinkleSpeed = 0.015 + Math.random() * 0.025;
       }
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
         this.twinkle += this.twinkleSpeed;
-        const tw = 0.5 + Math.sin(this.twinkle) * 0.5;
+        const tw = 0.55 + Math.sin(this.twinkle) * 0.45;
         this.currentOpacity = this.opacity * tw;
 
         const dx = mouseX - this.x;
         const dy = mouseY - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          this.x -= dx * 0.008;
-          this.y -= dy * 0.008;
-          this.currentOpacity = Math.min(1, this.currentOpacity + 0.15);
+        const distSq = dx * dx + dy * dy;
+        if (distSq < 10000) {
+          this.x -= dx * 0.006;
+          this.y -= dy * 0.006;
+          this.currentOpacity = Math.min(0.95, this.currentOpacity + 0.1);
         }
 
-        if (this.x < -20 || this.x > w + 20 || this.y < -20 || this.y > h + 20) this.reset();
+        if (this.x < -20 || this.x > w + 20 || this.y < -20 || this.y > h + 20) this.reset(false);
       }
       draw() {
-        drawStar(this.x, this.y, this.size * 1.6, this.currentOpacity, this.hue);
+        drawDot(this.x, this.y, this.size, this.currentOpacity, this.hue);
       }
     }
 
-    class SparkBurst {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.life = 1;
-        this.decay = 0.02 + Math.random() * 0.025;
-        this.size = 3 + Math.random() * 4;
-        this.hue = Math.random() > 0.5 ? 168 : 43;
-      }
-      update() {
-        this.life -= this.decay;
-        return this.life > 0;
-      }
-      draw() {
-        drawStar(this.x, this.y, this.size * (0.5 + this.life * 1.5), this.life * 0.85, this.hue);
-      }
-    }
-
-    const particleCount = 140;
+    const particleCount = 42;
     for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
-    setInterval(() => {
-      if (sparkBursts.length < 10) {
-        sparkBursts.push(new SparkBurst(Math.random() * w, Math.random() * h * 0.85));
+    function animateParticles(ts) {
+      if (!running) return;
+      // Cap ~30fps — still looks smooth, half the main-thread cost
+      if (ts - lastFrame < 32) {
+        requestAnimationFrame(animateParticles);
+        return;
       }
-    }, 700);
+      lastFrame = ts;
 
-    function animateParticles() {
       ctx.clearRect(0, 0, w, h);
-      particles.forEach((p) => { p.update(); p.draw(); });
-      sparkBursts = sparkBursts.filter((b) => {
-        b.draw();
-        return b.update();
-      });
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
       requestAnimationFrame(animateParticles);
     }
-    animateParticles();
+    requestAnimationFrame(animateParticles);
   }
 
   // ─── Section Scroll Animations ───
@@ -493,17 +495,19 @@
     });
   });
 
-  // ─── Parallax on scroll (desktop only — smoother on mobile) ───
+  // ─── Parallax on scroll (desktop only)
+  // Animate the wrap layer so CSS Ken Burns on the picture can keep running smoothly
   if (!isMobileHero && !reducedMotion) {
-    gsap.to('.hero-bg', {
+    gsap.to('.hero-video-wrap', {
       scrollTrigger: {
         trigger: '.hero',
         start: 'top top',
         end: 'bottom top',
-        scrub: true,
+        scrub: 1.2, // slight lag = butter-smooth feel
       },
-      y: 120,
-      scale: 1.05,
+      yPercent: 18,
+      ease: 'none',
+      force3D: true,
     });
   }
 
