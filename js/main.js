@@ -24,28 +24,33 @@
   // ─── Custom Cursor (Bathtub) ───
   const cursor = document.getElementById('cursor');
   if (cursor && window.matchMedia('(pointer: fine)').matches) {
-    const tub = cursor.querySelector('.cursor-tub');
     let mouseX = 0, mouseY = 0;
     let tubX = 0, tubY = 0;
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
+    let cursorFrame = 0;
 
     const TUB_OFFSET_X = 14;
     const TUB_OFFSET_Y = 18;
 
     function animateTub() {
+      cursorFrame = 0;
       const targetX = mouseX + TUB_OFFSET_X;
       const targetY = mouseY + TUB_OFFSET_Y;
       tubX += (targetX - tubX) * 0.12;
       tubY += (targetY - tubY) * 0.12;
-      tub.style.left = tubX + 'px';
-      tub.style.top = tubY + 'px';
-      requestAnimationFrame(animateTub);
+      cursor.style.transform = `translate3d(${tubX}px, ${tubY}px, 0)`;
+
+      if (Math.abs(targetX - tubX) > 0.1 || Math.abs(targetY - tubY) > 0.1) {
+        cursorFrame = requestAnimationFrame(animateTub);
+      }
     }
-    animateTub();
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!cursorFrame) cursorFrame = requestAnimationFrame(animateTub);
+    }, { passive: true });
+
+    cursorFrame = requestAnimationFrame(animateTub);
 
     const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question';
     document.querySelectorAll(hoverTargets).forEach((el) => {
@@ -201,6 +206,8 @@
     let mouseY = -1000;
     let running = true;
     let lastFrame = 0;
+    let particleFrame = 0;
+    let canvasRect = null;
 
     function resize() {
       const hero = document.getElementById('hero');
@@ -213,35 +220,57 @@
       canvas.style.width = w + 'px';
       canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      particles.forEach((particle) => particle.createSprite());
+      canvasRect = null;
     }
     resize();
     window.addEventListener('resize', resize, { passive: true });
+
+    function startParticles() {
+      if (running && !particleFrame) particleFrame = requestAnimationFrame(animateParticles);
+    }
+
+    function stopParticles() {
+      if (particleFrame) cancelAnimationFrame(particleFrame);
+      particleFrame = 0;
+    }
 
     // Pause particles when hero is off-screen
     if ('IntersectionObserver' in window && heroSection) {
       const io = new IntersectionObserver(([entry]) => {
         running = entry.isIntersecting;
-        if (running) requestAnimationFrame(animateParticles);
+        if (running) startParticles();
+        else stopParticles();
       }, { threshold: 0.05 });
       io.observe(heroSection);
     }
 
     document.getElementById('hero')?.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
+      if (!canvasRect) canvasRect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - canvasRect.left;
+      mouseY = e.clientY - canvasRect.top;
     }, { passive: true });
+    window.addEventListener('scroll', () => { canvasRect = null; }, { passive: true });
 
-    // Soft circles only — no path stars / no shadowBlur (major GPU win)
-    function drawDot(x, y, size, opacity, hue) {
-      const g = ctx.createRadialGradient(x, y, 0, x, y, size * 2.2);
-      g.addColorStop(0, `hsla(${hue}, 90%, 75%, ${opacity})`);
-      g.addColorStop(0.45, `hsla(${hue}, 90%, 60%, ${opacity * 0.35})`);
-      g.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
-      ctx.beginPath();
-      ctx.fillStyle = g;
-      ctx.arc(x, y, size * 2.2, 0, Math.PI * 2);
-      ctx.fill();
+    // Cache each glow once instead of allocating a gradient for every dot, every frame.
+    function createDotSprite(size, hue) {
+      const radius = size * 2.2;
+      const displaySize = Math.ceil(radius * 2 + 2);
+      const sprite = document.createElement('canvas');
+      sprite.width = Math.ceil(displaySize * dpr);
+      sprite.height = Math.ceil(displaySize * dpr);
+      const spriteCtx = sprite.getContext('2d', { alpha: true });
+      spriteCtx.scale(dpr, dpr);
+      const center = displaySize / 2;
+      const gradient = spriteCtx.createRadialGradient(center, center, 0, center, center, radius);
+      gradient.addColorStop(0, `hsla(${hue}, 90%, 75%, 1)`);
+      gradient.addColorStop(0.45, `hsla(${hue}, 90%, 60%, 0.35)`);
+      gradient.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
+      spriteCtx.beginPath();
+      spriteCtx.fillStyle = gradient;
+      spriteCtx.arc(center, center, radius, 0, Math.PI * 2);
+      spriteCtx.fill();
+      return { image: sprite, size: displaySize };
     }
 
     class Particle {
@@ -256,6 +285,10 @@
         this.hue = Math.random() > 0.45 ? 168 : 43;
         this.twinkle = Math.random() * Math.PI * 2;
         this.twinkleSpeed = 0.015 + Math.random() * 0.025;
+        this.createSprite();
+      }
+      createSprite() {
+        this.sprite = createDotSprite(this.size, this.hue);
       }
       update() {
         this.x += this.speedX;
@@ -276,7 +309,10 @@
         if (this.x < -20 || this.x > w + 20 || this.y < -20 || this.y > h + 20) this.reset(false);
       }
       draw() {
-        drawDot(this.x, this.y, this.size, this.currentOpacity, this.hue);
+        const offset = this.sprite.size / 2;
+        ctx.globalAlpha = this.currentOpacity;
+        ctx.drawImage(this.sprite.image, this.x - offset, this.y - offset, this.sprite.size, this.sprite.size);
+        ctx.globalAlpha = 1;
       }
     }
 
@@ -284,10 +320,11 @@
     for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
     function animateParticles(ts) {
+      particleFrame = 0;
       if (!running) return;
       // Cap ~30fps — still looks smooth, half the main-thread cost
       if (ts - lastFrame < 32) {
-        requestAnimationFrame(animateParticles);
+        particleFrame = requestAnimationFrame(animateParticles);
         return;
       }
       lastFrame = ts;
@@ -297,9 +334,9 @@
         particles[i].update();
         particles[i].draw();
       }
-      requestAnimationFrame(animateParticles);
+      particleFrame = requestAnimationFrame(animateParticles);
     }
-    requestAnimationFrame(animateParticles);
+    startParticles();
   }
 
   // ─── Section Scroll Animations ───
@@ -350,32 +387,13 @@
     });
   });
 
-  // Counter animation
-  document.querySelectorAll('[data-count]').forEach((el) => {
-    const target = parseInt(el.dataset.count, 10);
-    ScrollTrigger.create({
-      trigger: el,
-      start: 'top 80%',
-      once: true,
-      onEnter: () => {
-        gsap.to({ val: 0 }, {
-          val: target,
-          duration: 1.5,
-          ease: 'power2.out',
-          onUpdate: function () {
-            el.textContent = Math.round(this.targets()[0].val);
-          },
-        });
-      },
-    });
-  });
-
   // ─── Before/After Slider ───
   function initBAComparison(container) {
-    const handle = container.querySelector('.ba-handle');
-    if (!handle) return;
+    if (!container.querySelector('.ba-handle')) return;
 
     let isDragging = false;
+    let pendingX = null;
+    let dragFrame = 0;
 
     function setPosition(x) {
       const rect = container.getBoundingClientRect();
@@ -383,35 +401,40 @@
       let percent = ((x - rect.left) / rect.width) * 100;
       percent = Math.max(5, Math.min(95, percent));
       container.style.setProperty('--ba-split', percent + '%');
-      handle.style.left = percent + '%';
     }
-
-    setPosition(container.getBoundingClientRect().left + container.getBoundingClientRect().width * 0.5);
-    container._syncBA = () => {
-      const split = container.style.getPropertyValue('--ba-split') || '50%';
-      container.style.setProperty('--ba-split', split);
-    };
 
     const startDrag = (e) => {
       isDragging = true;
-      const x = e.touches ? e.touches[0].clientX : e.clientX;
-      setPosition(x);
+      container.setPointerCapture?.(e.pointerId);
+      setPosition(e.clientX);
     };
 
     const moveDrag = (e) => {
       if (!isDragging) return;
-      const x = e.touches ? e.touches[0].clientX : e.clientX;
-      setPosition(x);
+      pendingX = e.clientX;
+      if (!dragFrame) {
+        dragFrame = requestAnimationFrame(() => {
+          dragFrame = 0;
+          setPosition(pendingX);
+          pendingX = null;
+        });
+      }
     };
 
-    const endDrag = () => { isDragging = false; };
+    const endDrag = (e) => {
+      if (!isDragging) return;
+      if (dragFrame) cancelAnimationFrame(dragFrame);
+      dragFrame = 0;
+      if (pendingX !== null) setPosition(pendingX);
+      pendingX = null;
+      isDragging = false;
+      if (container.hasPointerCapture?.(e.pointerId)) container.releasePointerCapture(e.pointerId);
+    };
 
-    container.addEventListener('mousedown', startDrag);
-    container.addEventListener('touchstart', startDrag, { passive: true });
-    window.addEventListener('mousemove', moveDrag);
-    window.addEventListener('touchmove', moveDrag, { passive: true });
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('touchend', endDrag);
+    container.addEventListener('pointerdown', startDrag, { passive: true });
+    container.addEventListener('pointermove', moveDrag, { passive: true });
+    container.addEventListener('pointerup', endDrag, { passive: true });
+    container.addEventListener('pointercancel', endDrag, { passive: true });
   }
 
   document.querySelectorAll('.ba-comparison').forEach(initBAComparison);
@@ -419,17 +442,58 @@
   // BA slide navigation
   const baNavBtns = document.querySelectorAll('.ba-nav-btn');
   const baSlides = document.querySelectorAll('.ba-slide');
+  let baActivation = 0;
+
+  function prioritizeBASlide(index) {
+    const images = Array.from(baSlides[index]?.querySelectorAll('img') || []);
+    images.forEach((img) => {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    });
+    return images;
+  }
+
+  function warmBASlide(index) {
+    baSlides[index]?.querySelectorAll('img').forEach((img) => {
+      img.loading = 'eager';
+      img.fetchPriority = 'low';
+    });
+  }
+
+  function decodeBAImage(img) {
+    if (typeof img.decode === 'function') return img.decode().catch(() => undefined);
+    if (img.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  }
+
+  const transformationsSection = document.getElementById('transformations');
+  if ('IntersectionObserver' in window && transformationsSection) {
+    const warmObserver = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      warmBASlide(0);
+      warmObserver.disconnect();
+    }, { rootMargin: '800px 0px' });
+    warmObserver.observe(transformationsSection);
+  } else {
+    window.addEventListener('load', () => warmBASlide(0), { once: true });
+  }
 
   baNavBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.slide, 10);
+    const index = parseInt(btn.dataset.slide, 10);
+    btn.addEventListener('pointerenter', () => prioritizeBASlide(index), { passive: true });
+    btn.addEventListener('focus', () => prioritizeBASlide(index), { passive: true });
+    btn.addEventListener('click', async () => {
+      const activation = ++baActivation;
+      const images = prioritizeBASlide(index);
+      await Promise.all(images.map(decodeBAImage));
+      if (activation !== baActivation) return;
       baNavBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       baSlides.forEach((slide) => slide.classList.remove('active'));
       baSlides[index]?.classList.add('active');
-      requestAnimationFrame(() => {
-        baSlides[index]?.querySelectorAll('.ba-comparison').forEach((el) => el._syncBA?.());
-      });
     });
   });
 
@@ -510,16 +574,6 @@
       force3D: true,
     });
   }
-
-  gsap.to('.final-cta-bg', {
-    scrollTrigger: {
-      trigger: '.final-cta',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true,
-    },
-    backgroundPosition: '50% 100%',
-  });
 
   // Escape key closes modals
   document.addEventListener('keydown', (e) => {

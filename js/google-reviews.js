@@ -86,7 +86,7 @@
           <strong>${review.author}</strong>
           <span class="google-review-date">${review.date}</span>
         </div>
-        <img class="google-review-logo" src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" alt="" width="18" height="18" loading="lazy">
+        <img class="google-review-logo" src="images/google-g-logo.svg" alt="" width="18" height="18" loading="lazy" decoding="async">
       </div>
       <div class="google-review-stars" aria-label="${review.rating} out of 5 stars">${stars(review.rating)}</div>
       <blockquote class="google-review-quote">"${review.text}"</blockquote>
@@ -99,7 +99,7 @@
     if (!summaryEl) return;
     summaryEl.innerHTML = `
       <div class="google-summary-rating">
-        <img src="images/google-g-logo.svg" alt="Google" width="40" height="40" loading="lazy">
+        <img src="images/google-g-logo.svg" alt="Google" width="40" height="40" loading="lazy" decoding="async">
         <div class="google-summary-score-wrap">
           <div class="google-summary-score">${data.rating}<span>/5</span></div>
           <div class="google-summary-stars" aria-label="${data.rating} out of 5 stars">${stars(data.rating)}</div>
@@ -117,8 +117,9 @@
   }
 
   function duplicateTrack() {
-    const clone = track.innerHTML;
-    track.innerHTML += clone;
+    Array.from(track.children).forEach((card) => {
+      track.appendChild(card.cloneNode(true));
+    });
   }
 
   function renderReviews(data) {
