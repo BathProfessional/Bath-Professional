@@ -249,6 +249,13 @@ select { font-family: inherit; cursor: default; }
   text-shadow: 0 0 20px rgba(201, 162, 39, 0.35);
 }
 
+.header-phones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .header-phone {
   display: inline-flex;
   align-items: center;
@@ -394,9 +401,13 @@ select { font-family: inherit; cursor: default; }
   }
 
   .header-phone {
-    font-size: 0.875rem;
-    padding: 8px 16px;
-    gap: 8px;
+    font-size: 0.8125rem;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .header-phones {
+    gap: 6px;
   }
 }
 
@@ -405,14 +416,25 @@ select { font-family: inherit; cursor: default; }
   .menu-toggle { display: flex; }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
+  .header-phones {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
   .header-phone span {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
   }
 
   .header-phone {
-    padding: 8px 12px;
-    gap: 6px;
+    padding: 6px 10px;
+    gap: 5px;
+  }
+
+  .header-phone svg {
+    width: 14px;
+    height: 14px;
   }
 }
 

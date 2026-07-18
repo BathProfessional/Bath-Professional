@@ -117,6 +117,13 @@ button { font-family: inherit; cursor: default; border: none; background: none; 
   text-shadow: 0 0 20px rgba(201, 162, 39, 0.35);
 }
 
+.header-phones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .header-phone {
   display: inline-flex;
   align-items: center;
