@@ -21,46 +21,6 @@
     gsap.ticker.lagSmoothing(0);
   }
 
-  // ─── Custom Cursor (face image) ───
-  const cursor = document.getElementById('cursor');
-  if (cursor && window.matchMedia('(pointer: fine)').matches) {
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let curX = mouseX;
-    let curY = mouseY;
-    let cursorFrame = 0;
-
-    function animateCursor() {
-      cursorFrame = 0;
-      curX += (mouseX - curX) * 0.28;
-      curY += (mouseY - curY) * 0.28;
-      cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-
-      if (Math.abs(mouseX - curX) > 0.05 || Math.abs(mouseY - curY) > 0.05) {
-        cursorFrame = requestAnimationFrame(animateCursor);
-      }
-    }
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (!cursorFrame) cursorFrame = requestAnimationFrame(animateCursor);
-    }, { passive: true });
-
-    document.addEventListener('mousedown', () => cursor.classList.add('click'));
-    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
-    document.addEventListener('mouseleave', () => cursor.classList.add('is-hidden'));
-    document.addEventListener('mouseenter', () => cursor.classList.remove('is-hidden'));
-
-    cursorFrame = requestAnimationFrame(animateCursor);
-
-    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question, .btn, input, textarea, label, .header-phone';
-    document.querySelectorAll(hoverTargets).forEach((el) => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-  }
-
   // ─── Header Scroll ───
   const header = document.getElementById('header');
   ScrollTrigger.create({

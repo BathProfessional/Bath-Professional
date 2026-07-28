@@ -122,62 +122,35 @@ select { font-family: inherit; cursor: default; }
   line-height: 0.9;
 }
 
-/* Custom Cursor — face cutout */
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 1;
-  transition: opacity 0.25s ease;
-  will-change: transform;
-}
-
-.cursor.is-hidden {
-  opacity: 0;
-}
-
-.cursor-face {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 48px;
-  height: auto;
-  margin: -8px 0 0 -8px;
-  display: block;
-  object-fit: contain;
-  user-select: none;
-  -webkit-user-drag: none;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
-  transition: transform 0.28s var(--ease-out-expo), filter 0.28s;
-  transform-origin: 20% 20%;
-}
-
-.cursor.hover .cursor-face {
-  transform: scale(1.18);
-  filter: drop-shadow(0 6px 16px rgba(20, 184, 166, 0.45)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-.cursor.click .cursor-face {
-  transform: scale(0.92);
-}
-
+/* Face cursor — native OS cursor (no JS trail, lag, or hover effects) */
 @media (pointer: fine) {
+  html,
   body,
-  body * {
-    cursor: none !important;
+  a,
+  button,
+  .btn,
+  .header-phone,
+  .faq-question,
+  .ba-comparison,
+  .service-card,
+  select,
+  label,
+  input,
+  textarea {
+    cursor: url("/images/cursor-face.png") 20 12, url("images/cursor-face.png") 20 12, auto !important;
   }
 }
 
 @media (max-width: 768px), (pointer: coarse) {
+  html,
   body,
-  body * {
+  a,
+  button,
+  input,
+  textarea,
+  select {
     cursor: auto !important;
   }
-  .cursor { display: none; }
 }
 
 /* Header */
