@@ -137,7 +137,7 @@ select { font-family: inherit; cursor: default; }
   label,
   input,
   textarea {
-    cursor: url("/images/cursor-face.png") 20 12, url("images/cursor-face.png") 20 12, auto !important;
+    cursor: url("/images/cursor-face.png") 20 12, url("../images/cursor-face.png") 20 12, auto !important;
   }
 }
 
