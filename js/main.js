@@ -21,36 +21,49 @@
     gsap.ticker.lagSmoothing(0);
   }
 
-  // ─── Custom Cursor (professional ring + dot) ───
+  // ─── Custom Cursor (branded diamond + lagging aura) ───
   const cursor = document.getElementById('cursor');
   if (cursor && window.matchMedia('(pointer: fine)').matches) {
-    let mouseX = 0, mouseY = 0;
-    let curX = 0, curY = 0;
-    let cursorFrame = 0;
+    const core = cursor.querySelector('.cursor-core');
+    const aura = cursor.querySelector('.cursor-aura');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let coreX = mouseX;
+    let coreY = mouseY;
+    let auraX = mouseX;
+    let auraY = mouseY;
+    let running = true;
 
     function animateCursor() {
-      cursorFrame = 0;
-      curX += (mouseX - curX) * 0.22;
-      curY += (mouseY - curY) * 0.22;
-      cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
+      if (!running) return;
 
-      if (Math.abs(mouseX - curX) > 0.05 || Math.abs(mouseY - curY) > 0.05) {
-        cursorFrame = requestAnimationFrame(animateCursor);
-      }
+      // Core tracks tightly for precision
+      coreX += (mouseX - coreX) * 0.38;
+      coreY += (mouseY - coreY) * 0.38;
+      // Aura lags for a soft luxury trail
+      auraX += (mouseX - auraX) * 0.12;
+      auraY += (mouseY - auraY) * 0.12;
+
+      if (core) core.style.transform = `translate3d(${coreX}px, ${coreY}px, 0)`;
+      if (aura) aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0)`;
+
+      requestAnimationFrame(animateCursor);
     }
 
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!cursorFrame) cursorFrame = requestAnimationFrame(animateCursor);
     }, { passive: true });
 
     document.addEventListener('mousedown', () => cursor.classList.add('click'));
     document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
-    cursorFrame = requestAnimationFrame(animateCursor);
+    document.addEventListener('mouseleave', () => cursor.classList.add('is-hidden'));
+    document.addEventListener('mouseenter', () => cursor.classList.remove('is-hidden'));
 
-    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question, .btn, input, textarea, label';
+    requestAnimationFrame(animateCursor);
+
+    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question, .btn, input, textarea, label, .header-phone';
     document.querySelectorAll(hoverTargets).forEach((el) => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));

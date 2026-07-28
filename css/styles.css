@@ -122,7 +122,7 @@ select { font-family: inherit; cursor: default; }
   line-height: 0.9;
 }
 
-/* Custom Cursor — refined ring + dot */
+/* Custom Cursor — branded diamond + lagging aura */
 .cursor {
   position: fixed;
   top: 0;
@@ -131,70 +131,113 @@ select { font-family: inherit; cursor: default; }
   height: 0;
   pointer-events: none;
   z-index: 9998;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.cursor.is-hidden {
+  opacity: 0;
+}
+
+.cursor-aura {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(232, 197, 71, 0.35) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.28) 0%, transparent 68%);
+  filter: blur(6px);
+  opacity: 0.85;
   will-change: transform;
-  mix-blend-mode: difference;
+  transition:
+    width 0.35s var(--ease-out-expo),
+    height 0.35s var(--ease-out-expo),
+    margin 0.35s var(--ease-out-expo),
+    opacity 0.35s,
+    filter 0.35s;
 }
 
-.cursor-ring {
+.cursor-core {
   position: absolute;
   top: 0;
   left: 0;
-  width: 36px;
-  height: 36px;
-  margin: -18px 0 0 -18px;
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  background: transparent;
-  box-shadow: 0 0 12px rgba(20, 184, 166, 0.25);
+  background: linear-gradient(145deg, rgba(10, 22, 40, 0.92), rgba(5, 10, 20, 0.88));
+  border: 1px solid rgba(45, 212, 191, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(201, 162, 39, 0.18),
+    0 0 16px rgba(20, 184, 166, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+  color: var(--teal-bright);
+  will-change: transform;
   transition:
-    width 0.28s var(--ease-out-expo),
-    height 0.28s var(--ease-out-expo),
-    margin 0.28s var(--ease-out-expo),
-    border-color 0.28s,
-    background 0.28s,
-    opacity 0.28s,
-    box-shadow 0.28s;
+    width 0.3s var(--ease-out-expo),
+    height 0.3s var(--ease-out-expo),
+    margin 0.3s var(--ease-out-expo),
+    transform 0.3s var(--ease-out-expo),
+    border-color 0.3s,
+    box-shadow 0.3s,
+    color 0.3s,
+    background 0.3s;
 }
 
-.cursor-dot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(20, 184, 166, 0.5);
-  transition:
-    width 0.22s var(--ease-out-expo),
-    height 0.22s var(--ease-out-expo),
-    margin 0.22s var(--ease-out-expo),
-    opacity 0.22s,
-    background 0.22s;
+.cursor-diamond {
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(45, 212, 191, 0.6));
+  transition: transform 0.3s var(--ease-out-expo), filter 0.3s;
 }
 
-.cursor.hover .cursor-ring {
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
-  border-color: rgba(255, 255, 255, 0.95);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 22px rgba(20, 184, 166, 0.35);
+.cursor.hover .cursor-aura {
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  opacity: 1;
+  filter: blur(8px);
+  background:
+    radial-gradient(circle at 40% 35%, rgba(232, 197, 71, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.4) 0%, transparent 70%);
 }
 
-.cursor.hover .cursor-dot {
-  width: 4px;
-  height: 4px;
-  margin: -2px 0 0 -2px;
-  opacity: 0.9;
+.cursor.hover .cursor-core {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-color: rgba(232, 197, 71, 0.7);
+  color: var(--gold-light);
+  background: linear-gradient(145deg, rgba(15, 31, 53, 0.95), rgba(5, 10, 20, 0.9));
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.25),
+    0 0 28px rgba(20, 184, 166, 0.55),
+    0 0 40px rgba(201, 162, 39, 0.25),
+    0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
-.cursor.click .cursor-ring {
-  width: 28px;
-  height: 28px;
-  margin: -14px 0 0 -14px;
-  opacity: 0.75;
+.cursor.hover .cursor-diamond {
+  transform: scale(1.15) rotate(45deg);
+  filter: drop-shadow(0 0 6px rgba(232, 197, 71, 0.75));
+}
+
+.cursor.click .cursor-core {
+  transform: scale(0.88);
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.4),
+    0 0 12px rgba(20, 184, 166, 0.4);
+}
+
+.cursor.click .cursor-aura {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  opacity: 0.55;
 }
 
 @media (pointer: fine) {
