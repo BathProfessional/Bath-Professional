@@ -110,8 +110,8 @@
         <p class="google-summary-tagline">Highest-rated refinishing company in Florida</p>
       </div>
       <div class="google-summary-actions">
-        <a href="${data.googleUrl}" class="btn btn-review-outline" target="_blank" rel="noopener noreferrer">Read All Reviews</a>
-        <a href="${data.writeReviewUrl}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Write a Review</a>
+        <button type="button" class="btn btn-review-outline">Read All Reviews</button>
+        <button type="button" class="btn btn-primary btn-sm">Write a Review</button>
       </div>
     `;
   }

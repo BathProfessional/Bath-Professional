@@ -1993,6 +1993,13 @@ select { font-family: inherit; cursor: default; }
   font-size: 0.875rem;
   padding: 12px 22px;
   white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.google-summary-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px var(--teal-glow), 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .btn-review-outline {
@@ -2013,6 +2020,7 @@ select { font-family: inherit; cursor: default; }
   background: var(--teal);
   color: var(--navy-950);
   box-shadow: 0 0 24px var(--teal-glow);
+  transform: translateY(-2px);
 }
 
 .google-summary-loading,
