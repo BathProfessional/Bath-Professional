@@ -21,6 +21,37 @@
     gsap.ticker.lagSmoothing(0);
   }
 
+  // ─── Custom Cursor (neon crosshair — snappy, no lag trail) ───
+  const cursor = document.getElementById('cursor');
+  if (cursor && window.matchMedia('(pointer: fine)').matches) {
+    let visible = false;
+
+    const move = (e) => {
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      if (!visible) {
+        visible = true;
+        cursor.classList.add('is-active');
+      }
+    };
+
+    document.addEventListener('mousemove', move, { passive: true });
+    document.addEventListener('mousedown', () => cursor.classList.add('click'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+    document.addEventListener('mouseleave', () => {
+      visible = false;
+      cursor.classList.remove('is-active', 'hover', 'click');
+    });
+    document.addEventListener('mouseenter', () => {
+      // next mousemove re-activates
+    });
+
+    const hoverSelector = 'a, button, .btn, .header-phone, .faq-question, .ba-comparison, .service-card, select, label, input, textarea, summary';
+    document.querySelectorAll(hoverSelector).forEach((el) => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  }
+
   // ─── Header Scroll ───
   const header = document.getElementById('header');
   ScrollTrigger.create({
