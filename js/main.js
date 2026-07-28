@@ -21,38 +21,36 @@
     gsap.ticker.lagSmoothing(0);
   }
 
-  // ─── Custom Cursor (Bathtub) ───
+  // ─── Custom Cursor (professional ring + dot) ───
   const cursor = document.getElementById('cursor');
   if (cursor && window.matchMedia('(pointer: fine)').matches) {
     let mouseX = 0, mouseY = 0;
-    let tubX = 0, tubY = 0;
+    let curX = 0, curY = 0;
     let cursorFrame = 0;
 
-    const TUB_OFFSET_X = 14;
-    const TUB_OFFSET_Y = 18;
-
-    function animateTub() {
+    function animateCursor() {
       cursorFrame = 0;
-      const targetX = mouseX + TUB_OFFSET_X;
-      const targetY = mouseY + TUB_OFFSET_Y;
-      tubX += (targetX - tubX) * 0.12;
-      tubY += (targetY - tubY) * 0.12;
-      cursor.style.transform = `translate3d(${tubX}px, ${tubY}px, 0)`;
+      curX += (mouseX - curX) * 0.22;
+      curY += (mouseY - curY) * 0.22;
+      cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
 
-      if (Math.abs(targetX - tubX) > 0.1 || Math.abs(targetY - tubY) > 0.1) {
-        cursorFrame = requestAnimationFrame(animateTub);
+      if (Math.abs(mouseX - curX) > 0.05 || Math.abs(mouseY - curY) > 0.05) {
+        cursorFrame = requestAnimationFrame(animateCursor);
       }
     }
 
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!cursorFrame) cursorFrame = requestAnimationFrame(animateTub);
+      if (!cursorFrame) cursorFrame = requestAnimationFrame(animateCursor);
     }, { passive: true });
 
-    cursorFrame = requestAnimationFrame(animateTub);
+    document.addEventListener('mousedown', () => cursor.classList.add('click'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
-    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question';
+    cursorFrame = requestAnimationFrame(animateCursor);
+
+    const hoverTargets = 'a, button, .ba-comparison, .service-card, select, .faq-question, .btn, input, textarea, label';
     document.querySelectorAll(hoverTargets).forEach((el) => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
