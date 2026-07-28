@@ -126,17 +126,7 @@ select { font-family: inherit; cursor: default; }
 @media (pointer: fine) {
   html,
   body,
-  a,
-  button,
-  .btn,
-  .header-phone,
-  .faq-question,
-  .ba-comparison,
-  .service-card,
-  select,
-  label,
-  input,
-  textarea {
+  body * {
     cursor: url("/images/cursor-face.png") 20 12, url("../images/cursor-face.png") 20 12, auto !important;
   }
 }
@@ -144,11 +134,7 @@ select { font-family: inherit; cursor: default; }
 @media (max-width: 768px), (pointer: coarse) {
   html,
   body,
-  a,
-  button,
-  input,
-  textarea,
-  select {
+  body * {
     cursor: auto !important;
   }
 }
